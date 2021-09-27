@@ -1,0 +1,266 @@
+1.k8s节点扩容
+1.1基础环境准备
+1.2关闭防火墙selinux
+1.3内核参数调整
+vim /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+vm.swappiness = 0
+让修改的配置生效
+modprobe br_netfilter
+sysctl -p /etc/sysctl.d/k8s.conf
+关闭swap名称空间
+swapoff -a
+vim /etc/fstab
+
+1.4准备镜像
+kube-proxy
+pause
+calic
+
+1.5安装kubeadm组件
+rpm -ivh *.rpm
+
+1.6重新生成token
+kubeadm token create
+kk0ee6.nhvz5p8avmzyof3
+kubeadm token list
+
+1.7获取ca证书sha256编码hash值
+openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt |  openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+9db128fe4c68b0e65c19bb49226fc717e64e790d23816c5615ad6e21fbe92020
+
+1.8将节点加入到集群中
+kubeadm join 192.168.31.35:6443 --token kk0ee6.nhvz5p8avmzyof3  --discovery-token-ca-cert-hash sha256:9db128fe4c68b0e65c19bb49226fc717e64e790d23816c5615ad6e21fbe92020
+
+
+
+
+2.kubectl从Pod中复制文件到宿主机
+touch api-identity-web.log
+kubectl cp  identity-api-cbb48d77f-985vs:api-identity-web.log   -n identity api-identity-web.log
+总结：
+源文件不能以/开头，所以可以把需要copy的文件先拷贝到pod的工作目录下，目标参数必须为文件 不能是目录
+
+3.k8s工作节点重启后，状态为NotReady
+node节点物理主机名跟k8s集群节点名称不一致，导致节点状态一直为NotReady
+
+4.kubelet服务启动失败，使用systemctl start kubelet 启动无效
+关闭交换空间
+swapoff -a
+
+5.在部署k8s之后使用nodeport的方式进行访问，只能够通过Pod运行节点的IP进行访问
+添加防火墙规则
+iptables -P FORWARD ACCEPT
+
+6.部署Pod资源时，提示volume数据没有挂载点
+cgroups没有挂载，需要验证mount是否挂在了cgroups,如果挂载了可以重启一下机器
+
+7.namespace处于Terminating状态的删除办法
+
+解决方法是重新打开一个终端执行kubectl proxy跑一个API代理在本地的8081端口
+kubectl proxy --port=8081
+将namespace信息以json格式输出到文件中
+kubectl get namespace rook-ceph -o json > temp.json
+
+{
+    "apiVersion": "v1",
+    "kind": "Namespace",
+    "metadata": {
+        "annotations": {
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/name\":\"ingress-nginx\",\"app.kubernetes.io/part-of\":\"ingress-nginx\"},\"name\":\"ingress-nginx\"}}\n"
+        },
+        "creationTimestamp": "2019-11-11T02:25:34Z",
+        "deletionTimestamp": "2019-12-13T08:49:55Z",
+        "labels": {
+            "app.kubernetes.io/name": "ingress-nginx",
+            "app.kubernetes.io/part-of": "ingress-nginx"
+        },
+        "name": "ingress-nginx",
+        "resourceVersion": "8112132",
+        "selfLink": "/api/v1/namespaces/ingress-nginx",
+        "uid": "8a61ccbc-042a-11ea-a893-1866dae6f3a4"
+    },
+    "spec": {
+        "finalizers": [
+            "kubernetes"
+        ]
+    },
+    "status": {
+        "phase": "Terminating"
+    }
+打开temp.json,修改以下内容:
+
+修改前====>>
+"spec" {
+    "finalizers": [
+        "kubernetes"
+    ]
+},
+ 
+修改后=====>>
+"spec" {
+    "finalizers": [
+    ]
+},
+
+执行以下命令:
+curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json 127.0.0.1:8081/api/v1/namespaces/rook-ceph/finalize
+
+
+8.在将节点机器加入到k8s集群中的时候出现下面的错误
+[WARNING IsDockerSystemdCheck]: detected "cgroupfs" as the Docker cgroup driver. The recommended driver is "systemd". Please follow the guide at https://kubernetes.io/docs/setup/cri/
+检测到cgroupfs作为Docker cgroup驱动程序。推荐的驱动程序是"systemd"
+解决方法：
+在docker的daemon.json的配置文件下添加以下内容
+{
+   "exec-opts":["native.cgroupdriver=systemd"] 
+}
+
+9.lens app在连接公有云环境的k8s集群时，使用内部私有地址连接失败，为其设置反向代理
+kubectl proxy --address='0.0.0.0'  --accept-hosts='^*$' --port=8009
+然后将admin-config认证信息的配置文件的server字段配置成反向代理的ip:port
+
+
+
+10.K8S集群启动报错 kubelet cgroup driver: "cgroupfs" is different from docker cgroup driver: "systemd"
+查看kubelet运行日志
+journalctl -f -u kubelet   
+
+vim /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=cgroupfs"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ],
+  "registry-mirrors": ["https://pf5f57i3.mirror.aliyuncs.com"]
+}
+
+这里需要修改三个配置文件为systemd
+1).vim /etc/docker/daemon.json
+“exec-opts”: [“native.cgroupdriver=systemd”]
+
+2).vim /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+在KUBELET_KUBECONFIG_ARGS 后面追加 --cgroup-driver=systemd
+Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=systemd"
+
+3).vim /var/lib/kubelet/kubeadm-flags.env
+KUBELET_KUBEADM_ARGS="--cgroup-driver=systemd --network-plugin=cni --pod-infra-container-image=registry.aliyuncs.com/google_containers/pause:3.2"
+
+systemctl daemon-reload
+systemctl restart kubelet
+
+
+11.公有云环境使用公网IP部署k8s，初始化失败
+一般情况下，"kubeadm"部署集群时指定"--apiserver-advertise-address=<public_ip>"参数，即可在其他机器上，通过公网ip join到本机器，然而，有些公有云环境公网IP是通过SDN的方式运行，
+导致etcd无法监听到ip地址所以会无法启动，导致初始化失败。
+
+输入kubeadm init命令进行初始化的时候会卡在
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+[kubelet-check] Initial timeout of 40s passed.
+
+此时需要修改文件路径"/etc/kubernetes/manifests/etcd.yaml"
+修改"--listen-client-urls"和"--listen-peer-urls"配置项
+需要把"--listen-client-urls"后面的公网ip删除，把"--listen-peer-urls"改为本地的地址。
+
+12.kubernetes上节点node.kubernetes.io/disk-pressure:NoSchedule污点导致pod被驱逐
+k8s某台计算节点上的Pod大量处于被驱逐状态,通过describe node发现该node上有Taints: node.kubernetes.io/disk-pressure:NoSchedule 污点。
+此现象是由于/var/lib/docker/目录存储空间不足导致.
+eviction-hard 描述了驱逐阈值的集合（例如 memory.available<1Gi），如果满足条件将触发 pod 驱逐。
+kubelet 有如下所示的默认硬驱逐阈值：
+
+memory.available<100Mi
+nodefs.available<10%
+nodefs.inodesFree<5%
+imagefs.available<15%
+其中在k8s集群中
+kubelet 只支持两种文件系统分区。
+
+nodefs 文件系统，kubelet 将其用于卷和守护程序日志等。
+imagefs 文件系统，容器运行时用于保存镜像和容器可写层。
+imagefs可选。kubelet使用 cAdvisor 自动发现这些文件系统。kubelet不关心其它文件系统。当前不支持配置任何其它类型。例如，在专用文件系统中存储卷和日志是不可以的。
+
+处理结果:
+将/var/lib/docker 所在磁盘空间也清理到已使用空间小于85%， node污点自动消失。当然我们也可以配置kubelet启动参数，将其中阈值设置的更激进，比如images可用空间小于10%才报警之类的。
+刚清理完磁盘空间，node不会立刻将disk-pressure污点去除，因为node刷新有固定频率的，不过可以自行更改kubelet的参数–node-status-update-frequency
+–node-status-update-frequency - 指定 kubelet 向控制面组件发送状态的频率
+
+13.K8S网络异常 calico/node is not ready: BIRD is not ready: BGP not established异常解决
+
+调整calicao 网络插件的网卡发现机制，修改IP_AUTODETECTION_METHOD对应的value值。官方提供的yaml文件中，ip识别策略（IPDETECTMETHOD）没有配置，即默认为first-found，这会导致一个网络异常的ip作为nodeIP被注册，从而影响node-to-node mesh。我们可以修改成can-reach或者interface的策略，尝试连接某一个Ready的node的IP，以此选择出正确的IP。
+
+
+// calico.yaml 文件添加以下二行
+            - name: IP_AUTODETECTION_METHOD
+              value: "interface=ens.*"  # ens 根据实际网卡开头配置
+ 
+ // 配置如下             
+            - name: CLUSTER_TYPE
+              value: "k8s,bgp"
+            - name: IP_AUTODETECTION_METHOD
+              value: "interface=ens.*"
+              #或者 value: "interface=ens160"
+            # Auto-detect the BGP IP address.
+            - name: IP
+              value: "autodetect"
+            # Enable IPIP
+            - name: CALICO_IPV4POOL_IPIP
+              value: "Always"
+
+
+14.Unfortunately, an error has occurred:
+        timed out waiting for the condition
+
+This error is likely caused by:
+        - The kubelet is not running
+        - The kubelet is unhealthy due to a misconfiguration of the node in some way (required cgroups disabled)
+
+If you are on a systemd-powered system, you can try to troubleshoot the error with the following commands:
+        - 'systemctl status kubelet'
+        - 'journalctl -xeu kubelet'
+
+Additionally, a control plane component may have crashed or exited when started by the container runtime.
+To troubleshoot, list all containers using your preferred container runtimes CLI, e.g. docker.
+Here is one example how you may list all Kubernetes containers running in docker:
+        - 'docker ps -a | grep kube | grep -v pause'
+        Once you have found the failing container, you can inspect its logs with:
+        - 'docker logs CONTAINERID'
+error execution phase wait-control-plane: couldn't initialize a Kubernetes cluster
+To see the stack trace of this error execute with --v=5 or higher
+get nodes:
+The connection to the server 10.150.68.22:6443 was refused - did you specify the right host or port?
+
+此问题为docker引擎驱动有问题,比如此时驱动是nvidia，但是没有安装nvidia-runtime等组件
+需要修改docker配置文件，将引擎驱动修改成默认的runc
+
+
+15.因为Gemfield的K8s集群即将部署的是calico网络插件，而calico需要这个内核参数是0或者1，但是Ubuntu20.04上默认是2，这样就会导致calico插件报下面的错误（这是个fatal级别的error）：
+int_dataplane.go 1035: Kernel's RPF check is set to 'loose'.  This would allow endpoints to spoof their IP address.  Calico requires net.ipv4.conf.all.rp_filter to be set to 0 or 1. \
+If you require loose RPF and you are not concerned about spoofing,this check can be disabled by setting the IgnoreLooseRPF configuration parameter to 'true'.
+
+
+使用下面的命令来修改这个参数的值：
+
+#修改/etc/sysctl.d/10-network-security.conf
+vim /etc/sysctl.d/10-network-security.conf
+ 
+#将下面两个参数的值从2修改为1
+#net.ipv4.conf.default.rp_filter=1
+#net.ipv4.conf.all.rp_filter=1
+ 
+#然后使之生效
+sysctl --system
+
+
+16. 重新安装k8s
+> kubeadm reset
+> rm -rf $HOME/.kube/config
+> rm -rf /etc/kubernetes
+> cd /data/setup-centos-script/k8s
+> ./install-master-node.sh $ip

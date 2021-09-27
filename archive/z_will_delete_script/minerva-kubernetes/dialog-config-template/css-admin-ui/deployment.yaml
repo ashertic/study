@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: css-admin-ui
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-css-admin-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-css-admin-ui
+    spec:
+      containers:
+      - name: css-admin-ui
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/custom_service_admin_ui:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: VUE_APP_HOMEPAGE_ROOT_URL
+          value: HOMEPAGE_UI_URL_PLACEHOLDER
+        - name: VUE_APP_COOKIE_DOMAIN_NAME
+          value: "APP_COOKIE_DOMAIN_NAME_PLACEHOLDER"
+        - name: VUE_APP_IDENTITY_HOST
+          value: IDENTITY_API_URL_PLACEHOLDER/v1
+        - name: VUE_APP_ACCOUNT_ROOT_URL
+          value: IDENTITY_UI_URL_PLACEHOLDER
+        - name: VUE_APP_CUSTOMER_SERVICE_ADMIN_API_HOST
+          value: http://MASTER_IP_PLACEHOLDER:31101/api/v1
+        - name: VUE_APP_CUSTOMER_SERVICE_ADMIN_FILE_HOST
+          value: http://MASTER_IP_PLACEHOLDER:31101/file/v1
+        - name: VUE_APP_CUSTOM_SERVICE_AGENT_GATEWAY
+          value: http://MASTER_IP_PLACEHOLDER:31105
+        - name: VUE_APP_TASK_DIALOG_POC_HOST
+          value: ""
+        - name: VUE_APP_NER_HOST
+          value: ""
+        - name: VUE_APP_EXP_HOST
+          value: ""
+        - name: VUE_APP_RESOURCE_HOST
+          value: ""
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER

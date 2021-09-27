@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-agent-gateway
+  namespace: dialog
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: gw-css-admin.local.mnv
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: cluster-ip-agent-gateway
+          servicePort: 9500
+  tls:
+  - hosts:
+    - gw-css-admin.local.mnv
+    secretName: local-mnv

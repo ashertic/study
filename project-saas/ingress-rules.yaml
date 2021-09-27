@@ -1,0 +1,322 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-identity
+  namespace: identity
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: "500M"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "6000"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "6000"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "6000"
+spec:
+  rules:
+    - host: meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-homepage-ui
+              servicePort: 8082
+    - host: www.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-homepage-ui
+              servicePort: 8082
+    - host: account.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-identity-ui
+              servicePort: 9100
+    - host: api-account.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-identity-api
+              servicePort: 5200
+    - host: jisu.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-homepage-poseidon
+              servicePort: 8085
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-expert
+  namespace: expert
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: "500M"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "6000"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "6000"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "6000"
+
+spec:
+  rules:
+    - host: api-expert.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-expert-api
+              servicePort: 7001
+    - host: neng.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-expert-ui
+              servicePort: 8085
+    - host: libreoffice-api.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-libreoffice-api
+              servicePort: 7088
+    - host: api-approval.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-approval-api
+              servicePort: 7044
+    - host: approval.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-approval-ui
+              servicePort: 8100
+    - host: api-metis.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-metis-api
+              servicePort: 7046
+    - host: metis.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-metis-ui
+              servicePort: 8200
+    - host: mt-metis.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-metis-mt
+              servicePort: 7045
+    - host: reader.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-labeling-ui
+              servicePort: 8082
+    - host: docs.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-expert-docs
+              servicePort: 3000
+    - host: api-interview.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-interview-api
+              servicePort: 7001
+    - host: interview.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-interview-ui
+              servicePort: 8200
+    - host: bao.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-poseidon-ui
+              servicePort: 8300
+    - host: api-poseidon.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-poseidon-api
+              servicePort: 7066
+    - host: ptool.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-poseidon-label-tool
+              servicePort: 8400
+    - host: api-ptool.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-poseidon-label-tool-api
+              servicePort: 7068
+    - host: api-read.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-pixie-api
+              servicePort: 7096
+    - host: read.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-pixie-ui
+              servicePort: 7097
+    - host: koala.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-koala-ui
+              servicePort: 7090
+    - host: koala-api.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-koala-api
+              servicePort: 7089
+    - host: tuoshu.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-woxing-api
+              servicePort: 7047
+# kubectl create secret tls meinenghua.com --cert=meinenghua.com_bundle.crt --key=meinenghua.com.key
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: websocket
+  namespace: expert
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3599"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3599"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3599"
+spec:
+  rules:
+    - host: ws-poseidon.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-ws-poseidon-api
+              servicePort: 7067
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: approval-sip
+  namespace: approval
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3599"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3599"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3599"
+spec:
+  rules:
+    - host: sipai.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-ui-approval-sip
+              servicePort: 8101
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-logging
+  namespace: logging
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - kibana"
+spec:
+  rules:
+    - host: kibana.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-log-kibana
+              servicePort: 5601
+# yum install -y httpd-tools
+# htpasswd -c auth kibana
+# htpasswd生成的文件的秘钥在Ingress规则中添加身份验证。生成的文件必须命名为auth（实际上，这个秘钥有一个key： data.auth），否则入口控制器将返回一个503。
+# kubectl create secret generic basic-auth --from-file=auth  -n logging
+# kubectl describe secrets basic-auth     -n logging
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - host: grafana.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: grafana
+              servicePort: 3000
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-label
+  namespace: label
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: "500M"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "6000"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "6000"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "6000"
+
+spec:
+  rules:
+    - host: labelstudio.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-labelstudio
+              servicePort: 8080
+    - host: labelsupporter.meinenghua.com
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: cluster-ip-labelsupporter
+              servicePort: 8099

@@ -1,0 +1,608 @@
+"6.1.10 Ensure no world writable files exist" : [FAILED]
+Unix-based systems support variable settings to control access to files. World writable files are the least secure. See the chmod(2) man page for more information.
+
+Rationale:
+
+Data in world-writable files can be modified and compromised by any user on the system. World writable files may also indicate an 
+incorrectly written script or program that could potentially be the cause of a larger compromise to the system's integrity.
+
+The following 343 files are world writeable:
+
+  /var/lib/docker/overlay2/fc041e9f31c7199794044b98d473f4d8253bb288f00895edcb65fc0030a4bc99/diff/usr/bin/pdftohtml
+     owner: 1000, group: 1000, permissions: 0777
+
+  /var/lib/docker/overlay2/fc041e9f31c7199794044b98d473f4d8253bb288f00895edcb65fc0030a4bc99/diff/usr/lib/libpoppler.so.86
+     owner: 1000, group: 1000, permissions: 0777
+
+  /var/lib/docker/overlay2/aaf98128cf84cf40f5316859c62ec3fdd231f8d9b7990a57ffcdb97a2c739ced/diff/dev/null
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.idea/misc.xml
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.idea/modules.xml
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.idea/mt-runtime.iml
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.idea/other.xml
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.idea/vcs.xml
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.idea/workspace.xml
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.pytest_cache/.gitignore
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.pytest_cache/CACHEDIR.TAG
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.pytest_cache/README.md
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.pytest_cache/v/cache/lastfailed
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.pytest_cache/v/cache/nodeids
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/docker/overlay2/9e3095d1de38621f0e65864d830b44ca14ab17464538ea09e9a9a2ae709b4ee1/diff/app/.pytest_cache/v/cache/stepwise
+     owner: root, group: root, permissions: 0777
+
+  /var/lib/kubelet/pods/956805ee74d656048af1eea13b2b6f16/containers/kube-apiserver/6f848c08
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/8800902521dd14186a3d2251e81ab3d3/containers/etcd/3bb68b95
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/bfb9b2d88067ce22645bfccdf3c70351/containers/kube-controller-manager/af533a20
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/4e1bd6e5b41d60d131353157588ab020/containers/kube-scheduler/20de32cf
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/4e1bd6e5b41d60d131353157588ab020/containers/kube-scheduler/61148f4f
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/09606e34-0911-422b-b375-3439858f78de/containers/kube-proxy/59b92bb9
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/2b4ba05a-e8db-4484-8373-257f0927ca96/containers/coredns/3fc0c2f3
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/ae937825-1afb-4b42-a7cc-3a7aae7244a6/containers/coredns/aa00f574
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/173b85d8-ecdf-46f6-bcd7-ccab0cffe02f/containers/calico-kube-controllers/39545f8d
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/daf9028c-e420-4da1-8ed3-9e64935d10f0/containers/nginx-ingress-controller/3dc4f212
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/56cc3c2a-6986-4159-8645-4750d7236be0/containers/nvidia-device-plugin-ctr/05b753e8
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/23d6b343-87c7-4856-a1e8-c7134ede9361/containers/upgrade-ipam/543cb3f3
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/23d6b343-87c7-4856-a1e8-c7134ede9361/containers/install-cni/b5433533
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/23d6b343-87c7-4856-a1e8-c7134ede9361/containers/flexvol-driver/bf27c158
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/23d6b343-87c7-4856-a1e8-c7134ede9361/containers/calico-node/1f7af61d
+     owner: root, group: root, permissions: 0666
+
+  /var/lib/kubelet/pods/38455ac3-c9fd-4536-83d5-32407020d3f8/containers/fluent-bit/d2777b82
+     owner: root, group: root, permissions: 0666
+
+  /data1/minerva-setup/minerva-kubernetes/.DS_Store
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/.gitignore
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/copy-dialog-data.sh
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/copy-expert-data.sh
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/crontab-daily-refresh.sh
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/daily-refresh.sh
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/deploy.sh
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/agent-gateway/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/agent-gateway/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/agent-gateway/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/agent-gateway/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/agent-management-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/agent-management-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/bot-dialog-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/bot-dialog-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/bot-management-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/bot-management-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/client-gateway/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/client-gateway/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/client-gateway/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/client-gateway/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/client-management-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/client-management-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/config.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/css-admin-ui/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/css-admin-ui/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/css-admin-ui/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/css-admin-ui/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/css-client-ui/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/css-client-ui/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/css-client-ui/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/css-client-ui/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/customer-service-admin-api/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/customer-service-admin-api/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/customer-service-admin-api/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/customer-service-admin-api/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/customer-service-api/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/customer-service-api/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/customer-service-api/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/customer-service-api/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/dialog-engine-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/dialog-engine-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/dialog-message-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/dialog-message-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/dialog-report-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/dialog-report-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/dialog-report-pipeline/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/dialog-report-pipeline/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/exp-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/exp-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/log-volume.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-ehic-contextual-faq/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-ehic-contextual-faq/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-ehic-contextual-faq/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-ehic-contextual-faq/volume.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-ehic-contextual-faq-http-proxy/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-ehic-contextual-faq-http-proxy/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-ehic-contextual-faq-http-proxy/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-elasticsearch/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-elasticsearch/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-mla/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-mla/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-mla/volume.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-mrtv/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-mrtv/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-pipeline-proxy/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-pipeline-proxy/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-service-pipeline/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/nlp-service-pipeline/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/postgres/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/postgres/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/postgres/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/postgres/volume.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/rabbitmq/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/rabbitmq/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/rabbitmq/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/redis/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/redis/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/task-dialog-poc-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config/task-dialog-poc-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/.DS_Store
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/agent-gateway/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/agent-gateway/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/agent-gateway/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/agent-gateway/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/agent-management-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/agent-management-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/bot-dialog-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/bot-dialog-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/bot-management-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/bot-management-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/client-gateway/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/client-gateway/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/client-gateway/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/client-gateway/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/client-management-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/client-management-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/config.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/css-admin-ui/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/css-admin-ui/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/css-admin-ui/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/css-admin-ui/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/css-client-ui/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/css-client-ui/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/css-client-ui/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/css-client-ui/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/customer-service-admin-api/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/customer-service-admin-api/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/customer-service-admin-api/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/customer-service-admin-api/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/customer-service-api/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/customer-service-api/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/customer-service-api/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/customer-service-api/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/dialog-engine-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/dialog-engine-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/dialog-message-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/dialog-message-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/dialog-report-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/dialog-report-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/dialog-report-pipeline/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/dialog-report-pipeline/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/exp-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/exp-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/log-volume.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-ehic-contextual-faq/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-ehic-contextual-faq/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-ehic-contextual-faq/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-ehic-contextual-faq/volume.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-ehic-contextual-faq-http-proxy/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-ehic-contextual-faq-http-proxy/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-ehic-contextual-faq-http-proxy/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-elasticsearch/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-elasticsearch/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-mla/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-mla/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-mla/volume.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-mrtv/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-mrtv/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-pipeline-proxy/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-pipeline-proxy/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-service-pipeline/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/nlp-service-pipeline/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/postgres/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/postgres/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/postgres/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/postgres/volume.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/rabbitmq/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/rabbitmq/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/rabbitmq/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/redis/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/redis/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/task-dialog-poc-ms/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/dialog-config-template/task-dialog-poc-ms/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/env-config/local_staging.env
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/env-config/pwc.env
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/config.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/expert-api/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/expert-api/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/expert-api/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/expert-api/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/expert-ui/cluster-ip.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/expert-ui/deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/expert-ui/ingress.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/expert-ui/node-port.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/information-extraction-backend/cpu0-deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/information-extraction-backend/cpu1-deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva-kubernetes/expert-config/information-extraction-backend/gpu0-deployment.yaml
+     owner: appuser, group: appuser, permissions: 0777
+
+  /data1/minerva-setup/minerva

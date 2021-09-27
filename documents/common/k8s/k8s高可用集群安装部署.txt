@@ -1,0 +1,172 @@
+k8s高可用集群安装部署
+1.部署环境
+ha        172.20.128.10
+master-1  172.20.128.11
+master-2  172.20.128.12
+master-3  172.20.128.13
+node-1    172.20.128.14
+node-2    172.20.128.15
+node-3    172.20.128.16
+
+2.基础环境准备
+
+2.1配置/etc/hosts文件解析主机名
+hostnamectl set-hostname 主机名
+
+2.2关闭防火墙,selinux,swap
+systemctl stop firewalld
+systemctl disable firewalld
+swapoff -a
+vim /etc/fstab  
+vim /etc/selinux/config
+
+2.3修改内核参数
+cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+2.4打开路由转发功能
+echo "1" > /proc/sys/net/bridge/bridge-nf-call-iptables
+echo "1" > /proc/sys/net/bridge/bridge-nf-call-ip6tables
+
+2.5配置docker跟k8s源
+cat << EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF
+
+docker源
+wget -O /etc/yum.repos.d/docker-ce.repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+2.6配置免密登录
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+ssh-copy-id root@主机名
+
+3.在除ha节点之外的所有节点上安装一下工具
+3.1安装docker
+yum install -y docker-ce
+systemctl start docker
+systemctl enable docker
+3.2安装k8s
+yum install -y kubelet kubeadm kubectl
+systemctl enable kubelet
+systemctl start kubelet
+
+
+4.配置ha节点的高可用性
+yum install haproxy -y 
+cat << EOF > /etc/haproxy/haproxy.cfg
+global
+    log         127.0.0.1 local2
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+defaults
+    mode                    tcp
+    log                     global
+    retries                 3
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+
+frontend kube-apiserver
+    bind *:6443 # 指定前端端口
+    mode tcp
+    default_backend master
+
+backend master # 指定后端机器及端口，负载方式为轮询
+    balance roundrobin
+    server master-1  172.20.128.11:6443 check maxconn 2000
+    server master-2  192.168.0.102:6443 check maxconn 2000
+    server master-3  192.168.0.103:6443 check maxconn 2000
+EOF
+
+开启服务
+systemctl enable haproxy
+systemctl start haproxy
+ss -tnlp | grep 6443
+
+
+5.部署kubernetes
+在master-1节点上操作
+kubeadm config print init-defaults > kubeadm-config.yaml
+调整kubeadm-config.yaml文件，修改配置或新增配置
+apiVersion: kubeadm.k8s.io/v1beta2
+bootstrapTokens:
+- groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  token: abcdef.0123456789abcdef
+  ttl: 24h0m0s
+  usages:
+  - signing
+  - authentication
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 172.20.128.11    ##宿主机IP地址
+  bindPort: 6443
+nodeRegistration:
+  criSocket: /var/run/dockershim.sock
+  name: master-1    ##当前节点在k8s集群中名称
+  taints:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+---
+apiServer:
+  timeoutForControlPlane: 4m0s
+apiVersion: kubeadm.k8s.io/v1beta2
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+controlPlaneEndpoint: "172.20.128.10:6443"    ##前段haproxy负载均衡地址和端口
+controllerManager: {}
+dns:
+  type: CoreDNS
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers    ##使用阿里的镜像地址，否则无法拉取镜像
+kind: ClusterConfiguration
+kubernetesVersion: v1.17.4       #k8s版本号
+networking:
+  dnsDomain: cluster.local
+  podSubnet: "10.244.0.0/16"     #此处填写后期要安装网络插件flannel的默认网络地址
+  serviceSubnet: 10.96.0.0/12
+scheduler: {}
+
+执行节点初始化
+kubeadm  config images pull  --config kubeadm-config.yaml    #初始化之前可以先执行这条命令通过阿里源拉取镜像
+kubeadm init --config=kubeadm-config.yaml --upload-certs | tee kubeadm-init.log
+
+
+安装网络组件
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+加入另外两个master节点
+在master-2/master-3节点操作
+kubeadm join 172.20.128.10:6443 --token abcdef.0123456789abcdef \
+    --discovery-token-ca-cert-hash sha256:ce8434f1566bc61458768c222e20ea1b27d4ec708baf1fc732f44d103e1e695e \
+    --control-plane --certificate-key 1c3c6e1cc9354d58f7f3b06464bd1e23c29011b767a4772a0b236a00af888572
+如何--control-plane --certificate-key后面的数值失效了，可以执行 kubeadm init phase upload-certs --upload-certs 生成新的密钥
+
+加入node节点
+在node操作
+kubeadm join 172.20.128.10:6443 --token abcdef.0123456789abcdef \
+    --discovery-token-ca-cert-hash sha256:ce8434f1566bc61458768c222e20ea1b27d4ec708baf1fc732f44d103e1e695e 
+
+在3个master节点将下面的环境变量加到~/.bashrc文件中
+export KUBECONFIG=/etc/kubernetes/admin.conf  
+
+kubectl get nodes 查看集群运行状况
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+node节点扩容token过期使用此命令获取新的token
+kubeadm token create --print-join-command

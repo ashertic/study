@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-redis
+    spec:
+      containers:
+      - name: redis
+        image: IMAGE_BASEURL_PLACEHOLDER/redis:5.0.5-alpine
+        imagePullPolicy: Always
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: credential
+        command:
+        - redis-server
+        - --requirepass
+        - "$(REDIS_PASSWORD)"
+        - --appendonly
+        - "yes"
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: EXPERT_NODE_SELECTOR_PLACEHOLDER

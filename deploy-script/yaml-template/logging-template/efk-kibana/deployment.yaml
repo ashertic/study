@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-kibana
+  namespace: logging
+spec:
+  selector:
+    matchLabels:
+      app: deployment-log-kibana
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-log-kibana
+    spec:
+      containers:
+        - name: log-kibana
+          image: IMAGE_PLACEHOLDER
+          imagePullPolicy: Always
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200
+          resources: {}
+      imagePullSecrets:
+        - name: IMAGE_PULL_SECRET_PLACEHOLDER
+      nodeSelector:
+        node-tag: NODE_SELECTOR_PLACEHOLDER

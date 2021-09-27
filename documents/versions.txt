@@ -1,0 +1,5 @@
+1. centos7.4-7.8, centos 7.7
+2. ubuntu 1804 server
+3. k8s 1.16.3
+4. docker 18.09
+5. GPU drivers: goto nvidia.com to fetch the latest version

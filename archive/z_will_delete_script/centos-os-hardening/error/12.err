@@ -1,0 +1,190 @@
+"5.4.1.5 Ensure all users last password change date is in the past" : [WARNING]
+All users should have a password change date in the past.
+
+Rationale:
+
+If a users recorded password change date is in the future then they could bypass any set password expiration.
+
+NOTE: Nessus has not performed this check. Please review the benchmark to ensure target compliance.
+
+Remote value: 
+
+The command 'for i in $(cat /etc/shadow |cut -d: -f1);do echo '';echo $i;echo '------';now=$(date '+%b %d, %Y');echo -n 'Current Date : ';echo $now;change_date=$(chage --list $i |grep 
+'Last password change'| cut -d: -f2|awk '{$1=$1};1');echo -n 'Last Password Change : ';echo $change_date;done' returned : 
+
+root
+------
+Current Date : Jan 06, 2020
+Last Password Change : Jan 03, 2020
+
+bin
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+daemon
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+adm
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+lp
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+sync
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+shutdown
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+halt
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+mail
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+operator
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+games
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+ftp
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+nobody
+------
+Current Date : Jan 06, 2020
+Last Password Change : Oct 30, 2018
+
+systemd-network
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+dbus
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+polkitd
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+postfix
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+ntp
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+sshd
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+chrony
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+nscd
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+nslcd
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+splunker
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+mfe
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+nails
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+appuser
+------
+Current Date : Jan 06, 2020
+Last Password Change : Jan 02, 2020
+
+rpc
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+rpcuser
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+nfsnobody
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 09, 2019
+
+scanneraccount
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 19, 2019
+
+linuxasscanner
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 19, 2019
+
+linuxmonadmin
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 19, 2019
+
+operationsvc
+------
+Current Date : Jan 06, 2020
+Last Password Change : Dec 19, 2019
+
+Solution : 
+
+Investigate any users with a password change date in the future and correct them. Locking the account, expiring the password, or resetting the password manually may be appropriate.
+
+See Also : 
+
+https://workbench.cisecurity.org/files/1858
+
+Reference(s) : 
+
+800-53|IA-5,CIP|007-6-R5,HIPAA|164.308(a)(5)(ii)(D),PCI-DSSv3.1|8.2.3,PCI-DSSv3.2|8.2.3,800-171|3.5.7,CN-L3|7.1.2.7(e),CN-L3|7.1.3.1(b),CSF|PR.AC-1,ISO/IEC-27001|A.9.4.3,ITSG-33|IA-5,SWIFT-CSCv1|4.1,TBA-FIISB|26.2.1,TBA-FIISB|26.2.4,LEVEL|1NS

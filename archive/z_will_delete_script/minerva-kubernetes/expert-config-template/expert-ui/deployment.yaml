@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expert-ui
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-expert-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-expert-ui
+    spec:
+      containers:
+      - name: expert-ui
+        image: IMAGE_BASEURL_PLACEHOLDER/expert/expert_ui:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: VUE_APP_INFER_MODE
+          value: sync
+        - name: VUE_APP_TENANT
+          value: "VUE_APP_TENANT_PLACEHOLDER"
+        - name: VUE_APP_PRIMARY_COLOR
+          value: "VUE_APP_PRIMARY_COLOR_PLACEHOLDER"
+        - name: VUE_APP_HOMEPAGE_ROOT_URL
+          value: HOMEPAGE_UI_URL_PLACEHOLDER
+        - name: VUE_APP_IDENTITY_HOST
+          value: IDENTITY_API_URL_PLACEHOLDER/v1
+        - name: VUE_APP_EXPERT_HOST
+          value: EXPERT_API_URL_PLACEHOLDER/v1
+        - name: VUE_APP_COOKIE_DOMAIN_NAME
+          value: "APP_COOKIE_DOMAIN_NAME_PLACEHOLDER"
+        - name: VUE_APP_NAME
+          value: "EXPERT_UI_VUE_APP_NAME_PLACEHOLDER"
+        - name: VUE_APP_FOOTER_TEXT
+          value: "VUE_APP_FOOTER_TEXT_PLACEHOLDER"
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: EXPERT_NODE_SELECTOR_PLACEHOLDER

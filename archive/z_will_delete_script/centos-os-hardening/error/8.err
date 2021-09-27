@@ -1,0 +1,56 @@
+"4.2.4 Ensure permissions on all logfiles are configured" : [FAILED]
+It is important to ensure that log files have the correct permissions to ensure that sensitive data is archived and protected.
+
+The file /var/log/cron with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : 
+FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+
+The file /var/log/cron-20191215 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/cron-20191222 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/cron-20191229 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/cron-20200105 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/dmesg with fmode owner: root group: root mode: 0644 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/dmesg.old with fmode owner: root group: root mode: 0644 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/flb_kube.db with fmode owner: root group: root mode: 0644 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/grubby_prune_debug with fmode owner: root group: root mode: 0644 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/lastlog with fmode owner: root group: root mode: 0644 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/maillog with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/maillog-20191215 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/maillog-20191222 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/maillog-20191229 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/maillog-20200105 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/messages with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/messages-20191215 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/messages-20191222 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/messages-20191229 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/messages-20200105 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/secure with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/secure-20191215 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/secure-20191222 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/secure-20191229 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/secure-20200105 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/spooler with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/spooler-20191215 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/spooler-20191222 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/spooler-20191229 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/spooler-20200105 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/vmware-vmsvc.log with fmode owner: root group: root mode: 0644 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/wtmp with fmode owner: root group: utmp mode: 0664 attr: ---------------- uid: 0 gid: 22 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/yum.log with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+The file /var/log/yum.log-20200102 with fmode owner: root group: root mode: 0650 attr: ---------------- uid: 0 gid: 0 uneven permissions : FALSE  does not match the policy value mask: 0037 uneven permissions : TRUE 
+
+
+Remote value: 
+
+/var/log/cron, /var/log/cron-20191215, /var/log/cron-20191222, /var/log/cron-20191229, /var/log/cron-20200105, /var/log/dmesg, /var/log/dmesg.old, /var/log/flb_kube.db, /var/log/grubby_prune_debug, /var/log/lastlog, /var/log/maillog, /var/log/maillog-20191215, /var/log/maillog-20191222, /var/log/maillog-20191229, /var/log/maillog-20200105, /var/log/messages, /var/log/messages-20191215, /var/log/messages-20191222, /var/log/messages-20191229, /var/log/messages-20200105, /var/log/secure, /var/log/secure-20191215, /var/log/secure-20191222, /var/log/secure-20191229, /var/log/secure-20200105, /var/log/spooler, /var/log/spooler-20191215, /var/log/spooler-20191222, /var/log/spooler-20191229, /var/log/spooler-20200105, /var/log/vmware-vmsvc.log, /var/log/wtmp, /var/log/yum.log, /var/log/yum.log-20200102
+
+Solution : 
+
+Run the following command to set permissions on all existing log files: # find /var/log -type f -exec chmod g-wx,o-rwx {} +
+
+See Also : 
+
+https://workbench.cisecurity.org/files/1858
+
+Reference(s) : 
+
+800-53|CM-6,PCI-DSSv3.1|2.2.4,PCI-DSSv3.2|2.2.4,800-171|3.4.2,CSF|PR.IP-1,ITSG-33|CM-6,CCE|CCE-80189-4,CCE|CCE-80190-2,CSCv6|3.1,LEVEL|1S

@@ -1,0 +1,521 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "minerva",
+    "project": "dev staging",
+    "env": "development",
+    "description": "minerva use this to test dev code",
+    "mode": "k8s",
+    "os": "ubuntu",
+    "osVersion": "18.04",
+    "dataPathRoot": "../project-staging/data_root",
+    "imageOutputRootDir": "../project-staging/images"
+  },
+  "services": [
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-elasticsearch",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "elasticsearch:7.5.0",
+      "deployImage": "elasticsearch:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "elasticsearch",
+            "capacityStorage": "200Gi",
+            "hostPath": "logging/elasticsearch"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "fluent-bit",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "fluent-bit:1.4",
+      "deployImage": "fluent-bit:1.4",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-kibana",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "kibana:7.5.0",
+      "deployImage": "kibana:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api-log00",
+      "namespace": "logging",
+      "imageCategory": "logging",
+      "srcImage": "logging/api_eggjs:latest",
+      "deployImage": "logging/api_eggjs:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7100,
+            "targetPort": 7100
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32000,
+            "port": 7100,
+            "targetPort": 7100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.log00"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "FLUENT_LOGGER_SCOPE_SERVICE",
+              "value": "api-log00"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "http://cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api-log01",
+      "namespace": "logging",
+      "imageCategory": "logging",
+      "srcImage": "logging/api_eggjs:latest",
+      "deployImage": "logging/api_eggjs:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7100,
+            "targetPort": 7100
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32001,
+            "port": 7100,
+            "targetPort": 7100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.log01"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "FLUENT_LOGGER_SCOPE_SERVICE",
+              "value": "api-log01"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "http://cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-log02",
+      "namespace": "logging",
+      "imageCategory": "logging",
+      "srcImage": "logging/api_eggjs:latest",
+      "deployImage": "logging/api_eggjs:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7100,
+            "targetPort": 7100
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32002,
+            "port": 7100,
+            "targetPort": 7100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.log02"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "FLUENT_LOGGER_SCOPE_SERVICE",
+              "value": "mt-log02"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "http://cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "identity",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30001,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "w2cSXxHjlcbwYv6zLeyh"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "identity/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "homepage-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/homepage_ui:latest",
+      "deployImage": "identity/homepage_ui:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31001,
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "http://192.168.1.172:31002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "http://192.168.1.172:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "http://192.168.1.172:31004/v1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_ui:latest",
+      "deployImage": "identity/identity_ui:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31002,
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "http://192.168.1.172:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "http://192.168.1.172:31004/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_FOOTER_TEXT",
+              "value": "\"©2019 苏州美能华智能科技有限公司\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "token-mt",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/token_mt:latest",
+      "deployImage": "identity/token_mt:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5100,
+            "targetPort": 5100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_EXPIRED_DAYS",
+              "value": "\"7\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_KEY",
+              "value": "jd98u3oijmrf9u02p3kemf9q7uyrhfgnm4tuer9vcjkm34ijo"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_STATIC",
+              "value": "\"true\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity-api",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_api:latest",
+      "deployImage": "identity/identity_api:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5200,
+            "targetPort": 5200
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31004,
+            "port": 5200,
+            "targetPort": 5200
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_IDENTITY",
+              "value": "identity-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES",
+              "value": "postgres:w2cSXxHjlcbwYv6zLeyh@cluster-ip-postgres.identity.svc.cluster.local:5432"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "http://cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "identity-db-initalizer",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_db:latest",
+      "envs": [
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_HOST=192.168.1.172",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PORT=30001",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_DATABASE=identity-management",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_USERNAME=postgres",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PASSWORD=w2cSXxHjlcbwYv6zLeyh",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "192.168.1.172:5001/",
+    "targetRegistryUser": "testuser",
+    "targetRegistryPassword": "minerva"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "logging",
+      "identity",
+      "expert"
+    ],
+    "yamlOutputRootDir": "../project-staging/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "identity-management",
+        "server": "192.168.1.172",
+        "port": "30001",
+        "user": "postgres",
+        "password": "w2cSXxHjlcbwYv6zLeyh",
+        "diskDir": "/dbbackup/identity",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

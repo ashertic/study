@@ -1,0 +1,91 @@
+1. Linux禁用远程密码登录,同时使用SSh密钥登陆
+
+生成公私钥信息
+ssh-keygen -t rsa
+在当前文件夹下面生成my.pem（私钥）和my.pem.pub(公钥)
+ssh-keygen -t rsa -f my.pem -C "your@email.com"
+将my.pem.pub文件上传至你需要连接的服务器
+
+在服务器上操作：
+编辑authorized_keys文件，路径在当前用户目录下的.ssh文件夹下
+将生成的my.pem.pub文件的内容追加到 authorized_keys 文件中 
+
+编辑ssh服务配置文件 /etc/ssh/sshd_config
+PubkeyAuthentication yes              //开启密钥登录，默认是开启的
+AuthorizedKeysFile       .ssh/authorized_keys
+PasswordAuthentication       no      //禁用密码登录
+重启ssh服务
+
+2. NFS部署和使用
+
+服务端：nfs-server
+安装客户端工具：nfs-utils
+server:
+vim /etc/exports
+# add below
+/data1    192.168.0.0/16(rw,sync,no_root_squash)
+
+vim /etc/fstab
+# add below config
+192.168.0.153:/data1          /data1           nfs       defaults  0 0
+
+mount -a
+umount /data1
+
+3. RAID部署和使用
+
+4. nginx配置Auth
+
+server {
+    listen       20941 default_server;
+    listen       [::]:20941 default_server;
+    server_name  _;
+    root         /usr/share/nginx/html;
+  
+    # Load configuration files for the default server block.
+    include /etc/nginx/default.d/*.conf;
+
+    location / {
+      proxy_pass  http://114.217.149.221:30941/; # 需要在云平台上限制端口的开放性
+      proxy_redirect     off;
+      proxy_set_header   Host             $host;
+      proxy_set_header   X-Real-IP        $remote_addr;
+      proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+      auth_basic "The Kibana Monitor Center";
+      auth_basic_user_file  /usr/local/.passwd;
+    }
+}
+
+# yum install -y httpd-tools
+# htpasswd -c -d /usr/local/.passwd username password
+
+5. nginx配置https证书
+
+server {
+    #监听443端口
+    listen 443;
+    #你的域名
+    server_name huiblog.top; 
+    ssl on;
+    #ssl证书的pem文件路径
+    ssl_certificate  /root/card/huiblog.top.pem;
+    #ssl证书的key文件路径
+    ssl_certificate_key /root/card/huiblog.top.key;
+    location / {
+      proxy_pass  http://公网地址:项目端口号;
+    }
+}
+
+6. nginx转发websocket
+
+
+7. kubectl给机器打Tag
+
+kubectl label node nodename node-tag=gpu-001
+
+
+
+8. 软加密 如何获取 MT_MACHINE_ID
+
+gunzip -c expert-temp_id-latest.tgz | docker load
+docker run --privileged swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/temp_id:latest

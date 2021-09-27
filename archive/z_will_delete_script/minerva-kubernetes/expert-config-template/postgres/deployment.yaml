@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: IMAGE_BASEURL_PLACEHOLDER/postgres:11.5-alpine
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: credential
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: EXPERT_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: expert-postgres

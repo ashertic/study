@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-ip-customer-service-admin-api
+  namespace: dialog
+spec:
+  selector:
+    app: deployment-customer-service-admin-api
+  ports:
+    - protocol: TCP
+      port: 7007
+      targetPort: 7007
+  type: ClusterIP
+  

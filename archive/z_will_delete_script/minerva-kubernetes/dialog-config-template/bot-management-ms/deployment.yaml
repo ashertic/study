@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot-management-ms
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-bot-management-ms
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-bot-management-ms
+    spec:
+      containers:
+      - name: bot-management-ms
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/ms_bot_management:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: redis-host
+              name: variables
+              optional: false
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: redis-port
+              name: variables
+              optional: false
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: credential
+              optional: false
+        - name: PG_BOT_MANAGEMENT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: credential
+        envFrom:
+        - configMapRef:
+            name: microservice
+        - configMapRef:
+            name: pg-bot-management   
+        volumeMounts:
+        - mountPath: /root/logs
+          name: logdata    
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: logdata
+        persistentVolumeClaim:
+          claimName: dialog-logs 

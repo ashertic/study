@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-ip-dialog-engine-ms
+  namespace: dialog
+spec:
+  selector:
+    app: deployment-dialog-engine-ms
+  ports:
+    - protocol: TCP
+      port: 7005
+      targetPort: 7005
+  type: ClusterIP
+  

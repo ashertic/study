@@ -1,0 +1,26 @@
+部署服务之前机器环检测
+1. 查看机器的存储空间及挂载目录
+fdisk -l
+df -Th
+
+2. 操作系统版本
+cat /etc/centos-release
+
+3. cpu内存资源
+free -mh
+cat /proc/cpuinfo| grep "processor"| wc -l
+
+4. GPU版本型号
+nvidia-smi
+如果没有输出则说明没有安装对应的GPU驱动
+
+5. docker 信息
+docker info
+docker version
+
+6. k8s信息
+kubeadm version
+
+注意事项:安装docker后观察container存储镜像的目录是否足够的存储空间,默认存储路径为/var/lib/docker
+GPU驱动安装时，需要关闭操作系统的图形界面
+

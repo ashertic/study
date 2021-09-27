@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlp-pipeline-proxy
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-nlp-pipeline-proxy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-nlp-pipeline-proxy
+    spec:
+      containers:
+      - name: nlp-pipeline-proxy
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/nlp_pipeline_http_proxy:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: DIALOG_NLP_PIPELINE_HOST
+          value: nlp-pipeline.dialog.svc.cluster.local
+        - name: DIALOG_NLP_PIPELINE_PORT
+          value: "60062"
+        - name: AUTORPC_HTTP_PROXY_PORT
+          value: "6001"
+        - name: FIRST_LOAD_URL
+          value: http://ms-bot-management.dialog.svc.cluster.local:7003/api/v1/bots/first-load/qa  
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER

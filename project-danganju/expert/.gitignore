@@ -1,0 +1,10 @@
+modules_v2/*
+modules_v1/*
+migrations/*
+configs/cloud_models/*/*
+data/
+data.clean/
+resource/
+wheel/
+postgres/
+logs*/*

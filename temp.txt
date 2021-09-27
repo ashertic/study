@@ -1,0 +1,104 @@
+[root@CNSHAAPPPLN005 ~]# docker images | grep 10.157.112.207
+10.157.112.207:5001/identity/homepage_ui                         latest                     14d0988cba20        12 days ago         503MB
+10.157.112.207:5001/identity/identity_ui                         latest                     31019617b613        5 weeks ago         405MB
+10.157.112.207:5001/identity/identity_api                        latest                     ba4abc77f5e9        3 weeks ago         313MB
+10.157.112.207:5001/identity/token_mt                            latest                     8f1f1699f5d5        4 months ago        267MB
+
+
+
+10.157.112.207:5001/expert/expert_api                            latest                     fd714938edea        3 months ago        478MB
+10.157.112.207:5001/expert/expert_ui                             latest                     cf58c07ec8ea        11 days ago         973MB
+10.157.112.207:5001/expert/labeling_ui                           latest                     2271a4958bd5        6 days ago          429MB
+10.157.112.207:5001/expert/intelligence_mt                       latest                     3624ba1f6569        4 months ago        668MB
+10.157.112.207:5001/expert/intelligence_worker                   latest                     3a1c5673c1b2        3 months ago        3.46GB
+10.157.112.207:5001/expert/information_extraction                latest                     067e1f3bbd3b        5 days ago          9.98GB
+
+
+
+10.157.112.207:5001/kibana                                       7.5.0                      559435ef1be7        5 months ago        936MB
+10.157.112.207:5001/elasticsearch                                7.5.0                      911f580307ae        5 months ago        766MB
+10.157.112.207:5001/fluent-bit                                   1.3                        137421267adb        6 months ago        54.3MB
+10.157.112.207:5001/rabbitmq                                     3.8-rc-management-alpine   4a9f0b120dbb        8 months ago        138MB
+10.157.112.207:5001/redis                                        5.0.5-alpine               ed7d2ff5a623        8 months ago        29.3MB
+10.157.112.207:5001/postgres                                     11.5-alpine                78b21f6420c0        8 months ago        71.9MB
+
+
+
+docker login -u cn-north-4@GEVBQJCVF7ELO6E08LKL -p b176220c854d2610e28ce77448f7c10ef2a95d2c5029e869fd73a497cf79b4b0 swr.cn-north-4.myhuaweicloud.com4
+docker login -u cn-north-4@LO9V8YTHXG07DB3JAUJA -p 12ccd6491a7bdfc8b991de5068e1f3ea9dc08cbf36b92fe84db1d52f075135ab swr.cn-north-4.myhuaweicloud.com
+
+gunzip -c identity-identity_db-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_db:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_db:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_db:pwc-chuangxinzhongxin
+
+
+gunzip -c identity-homepage_ui-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/homepage_ui:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/privatization/pwc-home-page:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/privatization/pwc-home-page:pwc-chuangxinzhongxin
+
+
+gunzip -c identity-identity_ui-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_ui:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_ui:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_ui:pwc-chuangxinzhongxin
+
+
+gunzip -c identity-identity_api-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_api:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_api:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_api:pwc-chuangxinzhongxin
+
+
+gunzip -c identity-token_mt-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/token_mt:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/token_mt:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/token_mt:pwc-chuangxinzhongxin
+
+
+
+gunzip -c expert-expert_db-latest.tgz | docker load   
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_db:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_db:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_db:pwc-chuangxinzhongxin
+
+
+gunzip -c expert-expert_api-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_api:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_api:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_api:pwc-chuangxinzhongxin
+
+
+gunzip -c expert-expert_ui-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_ui:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_ui:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_ui:pwc-chuangxinzhongxin
+
+gunzip -c expert-labeling_ui-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/labeling_ui:pwc swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/labeling_ui:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/labeling_ui:pwc-chuangxinzhongxin
+
+gunzip -c expert-intelligence_mt-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/intelligence_mt:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/intelligence_mt:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/intelligence_mt:pwc-chuangxinzhongxin
+
+
+gunzip -c expert-intelligence_worker-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/intelligence_worker:latest swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/intelligence_worker:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/intelligence_worker:pwc-chuangxinzhongxin  
+
+gunzip -c expert-information_extraction-latest.tgz | docker load
+docker tag swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/information_extraction:pwc swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/information_extraction:pwc-chuangxinzhongxin
+docker push swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/information_extraction:pwc-chuangxinzhongxin
+
+
+
+docker images | grep swr.cn-north-4.myhuaweicloud.com/meinenghua
+
+
+
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/labeling_ui:pwc
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_ui:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/homepage_ui:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_api:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_db:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/identity_ui:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_api:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/intelligence_worker:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/expert_db:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/intelligence_mt:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/identity/token_mt:latest
+docker image rm swr.cn-north-4.myhuaweicloud.com/meinenghua/expert/information_extraction:pwc

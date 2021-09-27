@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlp-mla
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-nlp-mla
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-nlp-mla
+    spec:
+      containers:
+      - name: nlp-mla
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/nlp_mla:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: MLA_LOGGING_LEVEL
+          value: INFO
+        - name: MLA_PORT
+          value: "60050"
+        - name: HANLP_STATIC_ROOT
+          value: /app/data/hanlp/
+        - name: HANLP_JAR_PATH
+          value: /app/data/hanlp/hanlp-1.7.3.jar
+        - name: LTP_CWS_MODEL_PATH
+          value: /app/data/ltp/cws.model   
+        volumeMounts:
+        - mountPath: /app/data/hanlp
+          name: hanlp
+        - mountPath: /app/data/ltp
+          name: ltp   
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: hanlp
+        persistentVolumeClaim:
+          claimName: dialog-nlp-mla-hanlp
+      - name: ltp
+        persistentVolumeClaim:
+          claimName: dialog-nlp-mla-ltp

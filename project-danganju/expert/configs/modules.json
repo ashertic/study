@@ -1,0 +1,82 @@
+[
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_ocr_direction",
+    "version": "1.7.0",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_ocr_text",
+    "version": "1.8.0",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_dag_creation",
+    "version": "1.0.0",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_table_structure",
+    "version": "1.0.0",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_table_analysis",
+    "version": "1.0.0",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_ocr_tableline",
+    "version": "1.7.0",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_ocr_consignation",
+    "version": "1.7.0",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_ocr_consignation",
+    "version": "1.6.0",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_blocks_to_html",
+    "version": "1.0.1",
+    "dependencies": {}
+  },
+  {
+    "labels": [
+      "gpu"
+    ],
+    "module": "module_intelligence_extract_searchable_pdf",
+    "version": "1.3.0",
+    "dependencies": {}
+  }
+]

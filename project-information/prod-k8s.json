@@ -1,0 +1,801 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "information",
+    "project": "information",
+    "env": "development",
+    "description": "这是个文本信息读取saas环境的配置文件，生产配置",
+    "mode": "k8s",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "/data1/project-information/data_root",
+    "imageOutputRootDir": "../project-information/images"
+  },
+  "services": [
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-elasticsearch",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "elasticsearch:7.5.0",
+      "deployImage": "elasticsearch:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "fluent-bit",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "fluent-bit:1.4",
+      "deployImage": "fluent-bit:1.4",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-kibana",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "kibana:7.5.0",
+      "deployImage": "kibana:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "RabbitMQService",
+      "name": "rabbitmq",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "rabbitmq:3.8-rc-management-alpine",
+      "deployImage": "rabbitmq:3.8-rc-management-alpine",
+      "k8s": {
+        "__type__": "RabbitMQServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "nodePort": 30012,
+        "rabbitMQErlangCookie": "IMAZXXSDUZDQYLVUGFMC",
+        "rabbitMQUser": "",
+        "rabbitMQPassword": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-mt",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5001,
+            "targetPort": 5001
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32306,
+            "port": 5001,
+            "targetPort": 5001
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_http",
+              "value": "\"0\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.primary"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_PRIMARY",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "information-extraction-workspace",
+            "capacityStorage": 500,
+            "hostPath": "information-extraction/workspace"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "information-extraction-session",
+            "capacityStorage": 500,
+            "hostPath": "information-extraction/session"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu0",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.0"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu1",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.2"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu3",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.3"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu4",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-002",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.4"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu5",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-002",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.5"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu6",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-002",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.6"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu7",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-002",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.7"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-gpu0",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "livenessProbe": "information_extraction_livenessProbe",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_GPU",
+              "value": "\"0\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.gpu0"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINER",
+              "value": "\"-1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-gpu1",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:saas",
+      "deployImage": "expert/information_extraction:saas",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-002",
+          "needPrivilegedPermission": true,
+          "livenessProbe": "information_extraction_livenessProbe",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_GPU",
+              "value": "\"0\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.gpu1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINER",
+              "value": "\"0\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "12:00,0:00"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "dbInitializers": [],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "192.168.0.23:5001/",
+    "targetRegistryUser": "testuser",
+    "targetRegistryPassword": "minerva"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "logging",
+      "expert"
+    ],
+    "yamlOutputRootDir": "../project-information/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "dbBackupAndRestoreContext": {}
+}

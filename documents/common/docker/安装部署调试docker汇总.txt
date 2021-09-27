@@ -1,0 +1,25 @@
+1.centos7.x安装指定docker版本
+
+安装docker源
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+列出当前源下所有docker版本
+yum list docker-ce --showduplicates | sort -r
+
+安装部署
+yum install docker-ce-17.12.1.ce-1.el7.centos
+
+
+安装指定版本的nvidia-docker2
+yum search --showduplicates nvidia-docker   //查看指定版本
+
+# 添加仓库
+$ distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+$ curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.repo | sudo tee /etc/yum.repos.d/nvidia-docker.repo
+
+# 安装nvidia-docker2，重载Docker daemon configuration
+$ sudo yum install -y nvidia-docker2
+$ sudo pkill -SIGHUP dockerd
+
+# 测试一下是否安装成功
+$ docker run --runtime=nvidia --rm nvidia/cuda:9.0-base nvidia-smi

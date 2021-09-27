@@ -1,0 +1,32 @@
+{%- for one_volume in volumes %}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{one_volume.name}}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: {{one_volume.capacityStorage}}Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: {{one_volume.hostPath}}
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{one_volume.name}}
+  namespace: {{one_volume.namespace}}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{one_volume.capacityStorage}}Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: {{one_volume.name}}
+{%- endfor %}

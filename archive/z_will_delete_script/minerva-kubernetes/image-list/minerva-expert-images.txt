@@ -1,0 +1,7 @@
+expert/expert_db:latest,expert
+expert/expert_ui:latest,expert
+expert/labeling_ui:latest,expert
+expert/expert_api:latest,expert
+expert/intelligence_mt:latest,expert
+expert/intelligence_worker:latest,expert
+expert/information_extraction:latest,expert

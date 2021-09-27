@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-management-ms
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-client-management-ms
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-client-management-ms
+    spec:
+      containers:
+      - name: client-management-ms
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/ms_client_management:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: PG_CUSTOMER_SERVICE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: credential
+        envFrom:
+        - configMapRef:
+            name: microservice
+        - configMapRef:
+            name: pg-customer-service
+        volumeMounts:
+        - mountPath: /root/logs
+          name: logdata    
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: logdata
+        persistentVolumeClaim:
+          claimName: dialog-logs 

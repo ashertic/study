@@ -1,0 +1,6 @@
+postgres:11.5-alpine
+rabbitmq:3.8-rc-management-alpine
+redis:5.0.5-alpine
+elasticsearch:7.5.0
+kibana:7.5.0
+fluent-bit:1.3

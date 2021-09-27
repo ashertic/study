@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dialog-message-ms
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-dialog-message-ms
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-dialog-message-ms
+    spec:
+      containers:
+      - name: dialog-message-ms
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/ms_dialog_message:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: PG_DIALOG_MESSAGE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: credential
+        envFrom:
+        - configMapRef:
+            name: microservice
+        - configMapRef:
+            name: pg-dialog-message
+        volumeMounts:
+        - mountPath: /root/logs
+          name: logdata    
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: logdata
+        persistentVolumeClaim:
+          claimName: dialog-logs 

@@ -1,0 +1,34 @@
+{
+  "endpoint": "172.16.2.135:7001",
+  "expert_apis": [
+    {
+      "workspace_name": "tenant1档案局通用文档识别",
+      "test_folder": "通用文档识别",
+      "workspace_id": "79a737e0-8740-4765-bb82-1d6ff4107bbe",
+      "app_key": "96ebcfa0-c672-11eb-b24e-1941a7a869c7",
+      "app_secret": "96ebcfa1-c672-11eb-b24e-1941a7a869c7"
+    },
+    {
+      "workspace_name": "tenant1档案局表格读取",
+      "test_folder": "表格读取模型",
+      "workspace_id": "9ed83a43-eb30-4069-8a5e-21ca24ddab20",
+      "app_key": "98cc0150-c672-11eb-b24e-1941a7a869c7",
+      "app_secret": "98cc0151-c672-11eb-b24e-1941a7a869c7"
+    },
+    {
+      "workspace_name": "tenant2档案局通用文档识别",
+      "test_folder": "通用文档识别",
+      "workspace_id": "6f70f0cd-54ad-4d00-a769-b49fff85cf67",
+      "app_key": "46e1d6c0-c66e-11eb-921f-4f45561eb7a9",
+      "app_secret": "46e1d6c1-c66e-11eb-921f-4f45561eb7a9"
+    },
+    {
+      "workspace_name": "tenant2档案局表格读取",
+      "test_folder": "表格读取模型",
+      "workspace_id": "81bfe1b6-02ed-4d3f-bc6d-d2d7dee30ea3",
+      "app_key": "dcf3f5d0-c66e-11eb-93c1-eda14bdcfc67",
+      "app_secret": "dcf3f5d1-c66e-11eb-93c1-eda14bdcfc67"
+    }
+  ]
+}
+

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlp-ehic-contextual-faq
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-nlp-ehic-contextual-faq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-nlp-ehic-contextual-faq
+    spec:
+      containers:
+      - name: nlp-ehic-contextual-faq
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/ehic_conv_service:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: EHIC_DUA_CUDA_DEVICE
+          value: "0"
+        - name: EHIC_DUA_WEIGHTS_PATH
+          value: "/data/ehic_ckpt/_ckpt_epoch_50.ckpt"
+        - name: EHIC_DUA_TAGS_CSV
+          value: "/data/ehic_ckpt/meta_tags.csv"
+        - name: EHIC_DUA_META_JSON
+          value: "/data/ehic_ckpt/meta.json"
+        - name: EHIC_DUA_CENTROID_REPRS
+          value: "/data/ehic_ckpt/1204_2_centroid_reprs.ckpt"
+        - name: EHIC_CONV_SERVICE_LOGGING_LEVEL
+          value: "DEBUG"
+        - name: EHIC_CONV_SERVICE_PORT
+          value: "6680"
+        volumeMounts:
+        - mountPath: /data/ehic_ckpt
+          name: ehic-ckpt
+        - mountPath: /data/chinese_roberta_wwm_ext_pytorch
+          name: chinese-roberta-wwm-ext-pytorch
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: ehic-ckpt
+        persistentVolumeClaim:
+          claimName: dialog-nlp-ehic-contextual-faq-ckpt
+      - name: chinese-roberta-wwm-ext-pytorch
+        persistentVolumeClaim:
+          claimName: dialog-nlp-lm-roberta

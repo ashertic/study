@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-customer-service-admin-api
+  namespace: dialog
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: api-css-admin.local.mnv
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: cluster-ip-customer-service-admin-api
+          servicePort: 7007
+  tls:
+  - hosts:
+    - api-css-admin.local.mnv
+    secretName: local-mnv

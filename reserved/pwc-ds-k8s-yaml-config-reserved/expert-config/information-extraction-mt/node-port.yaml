@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-port-information-extraction-mt
+  namespace: expert
+spec:
+  selector:
+    app: deployment-information-extraction-mt
+  ports:
+    - protocol: TCP
+      nodePort: 32306
+      port: 5001
+      targetPort: 5001
+  type: NodePort
+  

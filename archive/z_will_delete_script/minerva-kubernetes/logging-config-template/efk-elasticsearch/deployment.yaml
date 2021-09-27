@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-elasticsearch
+  namespace: logging
+spec:
+  selector:
+    matchLabels:
+      app: deployment-log-elasticsearch
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-log-elasticsearch
+    spec:
+      containers:
+      - name: log-elasticsearch
+        image: IMAGE_BASEURL_PLACEHOLDER/elasticsearch:7.5.0
+        imagePullPolicy: Always
+        env:
+        - name: discovery.type
+          value: single-node
+        - name: ES_JAVA_OPTS
+          value: -Djava.net.preferIPv4Stack=true -Xms512m -Xmx512m
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: LOGGING_NODE_SELECTOR_PLACEHOLDER

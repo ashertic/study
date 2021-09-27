@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-css-client-ui
+  namespace: dialog
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: css-client.local.mnv
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: cluster-ip-css-client-ui
+          servicePort: 8080
+  tls:
+  - hosts:
+    - css-client.local.mnv
+    secretName: local-mnv

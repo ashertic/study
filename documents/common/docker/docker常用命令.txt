@@ -1,0 +1,64 @@
+1.停止所有运行的container
+docker container stop $(docker ps -a -q)
+
+2.删除所有containers
+docker container stop $(docker ps -a -q)
+
+3.删除所有的镜像
+docker rmi $(docker images -q)
+
+4.删除所有未打标签的镜像
+docker images | grep '<none>' | awk '{print $3}' | xargs docker rmi
+
+5.数据复制命令
+docker cp 本地数据   DockerName:/Dir     将主机数据拷贝到容器的Dir目录下
+docker cp DockerName:/Dir  /tmp         将容器中的数据拷贝到本地tmp目录中
+
+6.从容器中创建一个新的镜像
+docker commit [OPTIONS] CONTAINER(可以是containerID也可以是containerName)      [REPOSITORY[:TAG]]
+
+-a :提交的镜像作者；
+
+-c :使用Dockerfile指令来创建镜像；
+
+-m :提交时的说明文字；
+
+-p :在commit时，将容器暂停。
+
+将容器a404c6c174a2 保存为新的镜像,并添加提交人信息和说明信息
+docker commit -a "wm" -m "This is test image" a404c6c174a2  test:latest
+
+7.删除特定的docker container
+docker stop `docker ps -a | grep soft  | cut -d ' '  -f1`
+docker rm   `docker ps -a | grep soft  | cut -d ' '  -f1`
+
+8.运行一个test容器，在内部执行命令一直输出hello world到终端
+docker run --name test  -d centos   /bin/sh -c "while true;do echo hello world;sleep 1;done"
+
+9.docker logs -ft 2830d369a756  持续输出日志信息
+
+10.查看容器内运行的命令
+docker top   2830d369a756
+
+11.查看容器资源使用情况
+docker stats 2830d369a756
+
+12.在容器内部运行进程
+后台执行命令
+docker exec -d 2830d369a756 touch /etc/new_config_file
+进入交互式界面进行操作
+docker exec -it 2830d369a756 /bin/bash
+
+13.自动重启容器
+docker run  --restart=always  --name test  -d centos   /bin/sh -c "while true;do echo hello world;sleep 1;done"
+当容器的退出代码为非0值的时候，才会被重启。另外，on-failure还可以接受重启的次数
+--restart=on-failure:5
+
+14.绑定到特定的网络接口
+docker run -d -p 127.0.0.1:80:80 --name static_web static_web
+绑定到特定的网络接口的随机端口
+docker run -d -p 127.0.0.1::80 --name static_web static_web 
+
+
+15.删除所有标签为none的镜像
+docker image prune -y

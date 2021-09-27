@@ -1,0 +1,5 @@
+### Windows 7 Home Basic With SP1
+YKK6H-DP92R-VPKCF-7YDCF-4WYRK
+
+### Windows 7 Ultimate With SP1
+KGDG3-66HP7-MGWBG-HV7BY-RDX9Y

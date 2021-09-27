@@ -1,0 +1,9 @@
+[
+  {
+    "id": "worker:gpu",
+    "status": "active",
+    "groups": [
+      "gpu"
+    ]
+  }
+]

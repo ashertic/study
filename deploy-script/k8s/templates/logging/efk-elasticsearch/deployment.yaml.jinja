@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-elasticsearch
+  namespace: logging
+spec:
+  selector:
+    matchLabels:
+      app: deployment-log-elasticsearch
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-log-elasticsearch
+    spec:
+      containers:
+      - name: log-elasticsearch
+        image: {{image}}
+        imagePullPolicy: Always
+        env:
+        - name: discovery.type
+          value: single-node
+        - name: ES_JAVA_OPTS
+          value: -Djava.net.preferIPv4Stack=true -Xms4096m -Xmx4096m
+        resources: {}
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: logging-elasticsearch
+      imagePullSecrets:
+        - name: {{imagePullSecrets}}
+      nodeSelector:
+        node-tag: {{nodeTag}}

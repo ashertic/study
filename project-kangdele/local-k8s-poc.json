@@ -1,0 +1,328 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "demo",
+    "project": "demo",
+    "env": "development",
+    "description": "这是个康德乐POC测试环境的配置文件，部署新的Image前，先使用这个Azure上测试",
+    "mode": "k8s",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "/data/project-kangdele/data_root/",
+    "imageOutputRootDir": "../project-kangdele/images"
+  },
+  "services": [
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-elasticsearch",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "elasticsearch:7.5.0",
+      "deployImage": "elasticsearch:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "elasticsearch",
+            "capacityStorage": "200Gi",
+            "hostPath": "logging/elasticsearch"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "fluent-bit",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "fluent-bit:1.4",
+      "deployImage": "fluent-bit:1.4",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-kibana",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "kibana:7.5.0",
+      "deployImage": "kibana:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "identity",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30001,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "Kt4C4TCHJ3"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "identity/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "search-api",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/search_api:latest",
+      "deployImage": "expert/search_api:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7094,
+            "targetPort": 7094
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31094,
+            "port": 7094,
+            "targetPort": 7094
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "FILE_DATA",
+              "value": "/app/data"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "ES_HOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PORT",
+              "value": "\"7094\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_DATABASE",
+              "value": "search"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES",
+              "value": "postgres:Kt4C4TCHJ3@cluster-ip-postgres.identity.svc.cluster.local:5432"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_METIS",
+              "value": ""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKFLOW_ID",
+              "value": ""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "search",
+              "claimName": "search",
+              "mountPath": "/app/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "search",
+            "capacityStorage": 200,
+            "hostPath": "expert/search"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "search-ui",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/search_ui:latest",
+      "deployImage": "expert/search_ui:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7095,
+            "targetPort": 7095
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31095,
+            "port": 7095,
+            "targetPort": 7095
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_SEARCH_HOST",
+              "value": "http://52.130.145.169:31094/v1"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "identity-db-initalizer",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_db:latest",
+      "envs": [
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_HOST=10.0.20.4",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PORT=30001",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_DATABASE=identity-management",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_USERNAME=postgres",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PASSWORD=Kt4C4TCHJ3",
+        "DB_EXECUTION_CONTEXT=demo"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "metis-db-initalizer",
+      "imageCategory": "metis",
+      "srcImage": "expert/metis_db:latest",
+      "envs": [
+        "POSTGRES=postgres:Kt4C4TCHJ3@10.0.20.4:30003"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "expert-db-initalizer",
+      "imageCategory": "expert",
+      "srcImage": "expert/expert_db:latest",
+      "useHostNetwork": false,
+      "envs": [
+        "POSTGRES=postgres:Kt4C4TCHJ3@10.0.20.4:30003"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "10.0.20.4:5001/",
+    "targetRegistryUser": "testuser",
+    "targetRegistryPassword": "minerva"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "logging",
+      "identity",
+      "expert"
+    ],
+    "yamlOutputRootDir": "../project-kangdele/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "identity-management",
+        "server": "10.0.20.4",
+        "port": "30001",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/identity",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "expert",
+        "server": "10.0.20.4",
+        "port": "30003",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/expert",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "metis",
+        "server": "10.0.20.4",
+        "port": "30003",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/metis",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

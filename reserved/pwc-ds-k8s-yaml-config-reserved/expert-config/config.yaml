@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+data:
+  rabbitmq-user: admin
+  rabbitmq-erlang-cookie: IMAZXXSDUZDQYLVUGFMC
+  rabbitmq-host: cluster-ip-rabbitmq.expert.svc.cluster.local
+  rabbitmq-port: "5672"
+kind: ConfigMap
+metadata:
+  name: variables
+  namespace: expert
+---
+apiVersion: v1
+data:
+  # use this command to get base64 string: echo -n '1ZwTUC2bGh6E' | base64
+  rabbitmq-password: MVp3VFVDMmJHaDZF
+kind: Secret
+metadata:
+  name: credential
+  namespace: expert
+type: Opaque

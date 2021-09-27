@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labeling-ui
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-labeling-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-labeling-ui
+    spec:
+      containers:
+      - name: labeling-ui
+        image: 10.158.12.45:5001/expert/labeling_ui:latest
+        imagePullPolicy: Always
+        env:
+        - name: VUE_APP_HOMEPAGE_ROOT_URL
+          value: https://cn-idir.asia.pwcinternal.com:50000
+        - name: VUE_APP_ACCOUNT_ROOT_URL
+          value: https://cn-idir.asia.pwcinternal.com:50001
+        - name: VUE_APP_COOKIE_DOMAIN_NAME
+          value: "cn-idir.asia.pwcinternal.com"
+        - name: VUE_APP_IDENTITY_API_HOST
+          value: https://cn-idir.asia.pwcinternal.com:443/v1
+        - name: VUE_APP_READER_API_HOST
+          value: https://cn-idir.asia.pwcinternal.com:60002
+        - name: VUE_APP_OCR_API_ROOT_URL
+          value: ""
+        - name: VUE_APP_TENANT
+          value: "minerva"
+        - name: VUE_APP_PRIMARY_COLOR
+          value: ""
+        - name: VUE_APP_NAME
+          value: "智能文本信息读取"
+        - name: VUE_APP_FOOTER_TEXT
+          value: "©2019 苏州美能华智能科技有限公司"
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: gpu-001

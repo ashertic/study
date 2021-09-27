@@ -1,0 +1,131 @@
+0. 基本服务安装
+0.1 开启ssh服务
+apt-get install openssh-server
+systemctl start ssh
+
+1.安装GPU驱动
+# GPU驱动有版本要求吗？
+1.1在线直接安装
+apt install ubuntu-drivers-common -y
+ubuntu-drivers devices
+ubuntu-drivers autoinstall
+reboot 重启机器
+系统会自动安装最新版本的GPU驱动
+
+1.2离线版安装GPU驱动
+apt-get remove --purge nvidia* #卸载原有的nvidia驱动
+编辑/etc/modprobe.d/blacklist.conf
+将下面数据追加到文件中
+blacklist nouveau  
+options nouveau modeset=0
+保存退出
+update-initramfs -u
+reboot
+chmod  a+x NVIDIA-Linux-x86_64-440.31.run
+sh NVIDIA-Linux-x86_64-440.31.run --no-opengl-files
+
+2.配置服务器基础环境
+2.1关闭swap
+swapoff -a
+修改/etc/fstab，注释掉swap那行，持久化生效
+2.2设置时区
+timedatectl set-timezone Asia/Shanghai
+systemctl restart rsyslog 
+2.3设置iptables可以看到bridged traffic
+先确认Linux内核加载了br_netfilter模块：
+lsmod | grep br_netfilter
+如果命令执行没有输出的话,则执行modprobe  br_netfilter手动加载模块
+2.4 开启路由转发功能
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sudo sysctl --system
+2.5 关闭防火墙
+ufw disable
+
+
+3.安装docker
+apt-get install apt-transport-https ca-certificates curl software-properties-common
+添加docker公共密钥
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+设置版本类型
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+
+查看安装执行版本
+apt-cache madison docker-ce
+
+apt install docker-ce=5:18.09.3~3-0~ubuntu-xenial
+
+systemctl enable docker
+systemctl start docker
+
+4.安装NVIDIA-docker
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+apt-get update
+apt-get install nvidia-docker2
+#修改/etc/docker/daemon.json文件如下所示：
+{
+    "default-runtime": "nvidia",
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    }
+}
+测试:
+pkill -SIGHUP dockerd
+systemctl restart docker
+docker run --rm nvidia/cuda:9.0-base nvidia-smi
+
+5.安装k8s
+设置阿里云k8s源
+apt-get update && apt-get install -y apt-transport-https
+
+curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg  | apt-key add -
+
+cat << EOF > /etc/apt/sources.list.d/kubernetes.list
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+
+apt-get update
+apt-get install -y kubelet=1.16.3-00 kubeadm=1.16.3-00 kubectl=1.16.3-00 ipvsadm ipset
+
+上传镜像使用公司提供镜像并对其进行解压然后进行安装
+POD_CIDR="10.96.0.0/12"
+sed -i -e "s?192.168.0.0/16?$POD_CIDR?g" calico.yaml
+
+kubeadm init --apiserver-advertise-address 192.168.0.69 --apiserver-bind-port 6443 --kubernetes-version 1.16.3 --pod-network-cidr $POD_CIDR
+
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+sleep 5
+kubectl get nodes
+
+echocolor "apply kubernetes network addon: calico"
+kubectl apply -f calico.yaml
+
+sleep 120
+echocolor "kubernetes information as below:"
+kubectl get nodes
+kubectl get pods --all-namespaces
+
+echocolor "Configure cluster to allow assign Pod to master node"
+kubectl taint nodes --all node-role.kubernetes.io/master-
+sleep 30
+
+echocolor "install nginx ingress"
+kubectl apply -f ingress-mandatory.yaml
+kubectl apply -f ingress-service-nodeport.yaml
+sleep 30
+kubectl get pods --all-namespaces -l app.kubernetes.io/name=ingress-nginx
+kubectl get svc -n ingress-nginx
+
+echocolor "install nvidia-device-plugin"
+kubectl apply -f nvidia-device-plugin.yaml
+sleep 30
+kubectl get pods --all-namespaces -l name=nvidia-device-plugin-ds
+

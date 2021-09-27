@@ -1,0 +1,174 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "demo",
+    "project": "demo",
+    "env": "development",
+    "description": "这是个本地测试环境的配置文件，部署新的Image前，先使用这个35上测试",
+    "mode": "k8s",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "../project-label/data_root/",
+    "imageOutputRootDir": "../project-label/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "labelstudio",
+      "namespace": "label",
+      "imageCategory": "labelstudio",
+      "srcImage": "labelstudio/label_studio:latest",
+      "deployImage": "/meinenghua/labelstudio/label_studio:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32580,
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "labelstudio",
+              "claimName": "labelstudio",
+              "mountPath": "/label-studio/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "labelstudio",
+            "capacityStorage": 100,
+            "hostPath": "labelstudio/studio"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "supporter",
+            "capacityStorage": 100,
+            "hostPath": "labelstudio/supporter"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "labelsupporter",
+      "namespace": "label",
+      "imageCategory": "labelsupporter",
+      "srcImage": "labelstudio/labeler_supporter:latest",
+      "deployImage": "/meinenghua/labelstudio/labeler_supporter:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8099,
+            "targetPort": 8099
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32599,
+            "port": 8099,
+            "targetPort": 8099
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "supporter",
+              "claimName": "supporter",
+              "mountPath": "/usr/src/app/flaskProject/static"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "dbInitializers": [],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "swr.cn-north-4.myhuaweicloud.com",
+    "targetRegistryUser": "cn-north-4@IEMJQQ1GEOZBP3QE0U5Y",
+    "targetRegistryPassword": "b27fe0087f9c9c268e105cac939d49c163f674e8d2165db0acf7ac75b80bab4b"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "label"
+    ],
+    "yamlOutputRootDir": "../project-label/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "identity-management",
+        "server": "192.168.1.172",
+        "port": "30001",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/identity",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "expert",
+        "server": "192.168.1.172",
+        "port": "30003",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/expert",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "metis",
+        "server": "192.168.1.172",
+        "port": "30003",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/metis",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "approval",
+        "server": "192.168.1.172",
+        "port": "30003",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/approval",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

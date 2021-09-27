@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: NAME_PLACEHOLDER
+  namespace: NAMESPACE_PLACEHOLDER
+spec:
+  selector:
+    matchLabels:
+      app: deployment-NAME_PLACEHOLDER
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-NAME_PLACEHOLDER
+    spec:
+      containers:
+        - name: NAME_PLACEHOLDER
+          image: IMAGE_PLACEHOLDER
+          imagePullPolicy: Always
+          env:
+            - name: REDIS_PASSWORD
+              value: REDIS_PASSWORD_PLACEHOLDER
+          command:
+            - redis-server
+            - --requirepass
+            - "$(REDIS_PASSWORD)"
+            - --appendonly
+            - "yes"
+          resources: {}
+      imagePullSecrets:
+        - name: IMAGE_PULL_SECRET_PLACEHOLDER
+      nodeSelector:
+        node-tag: NODE_SELECTOR_PLACEHOLDER

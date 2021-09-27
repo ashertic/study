@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{name}}
+  namespace: {{namespace}}
+spec:
+  selector:
+    matchLabels:
+      app: {{selectorLabel}}
+  replicas: 1
+  serviceName: {{name}}
+  template:
+    metadata:
+      labels:
+        app: {{selectorLabel}}
+    spec:
+      containers:
+        - name: {{containerName}}
+          image: {{image}}
+          imagePullPolicy: Always
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - >
+                    if [ -z "$(grep rabbitmq /etc/resolv.conf)" ]; then
+                      sed "s/^search \([^ ]\+\)/search rabbitmq.\1 \1/" /etc/resolv.conf > /etc/resolv.conf.new;
+                      cat /etc/resolv.conf.new > /etc/resolv.conf;
+                      rm /etc/resolv.conf.new;
+                    fi;
+                    until rabbitmqctl node_health_check; do sleep 1; done;
+                    if [ -z "$(rabbitmqctl cluster_status | grep rabbitmq-0)" ]; then
+                      touch /gotit
+                      rabbitmqctl stop_app;
+                      rabbitmqctl reset;
+                      rabbitmqctl join_cluster rabbit@rabbitmq-0;
+                      rabbitmqctl start_app;
+                    else
+                      touch /notget
+                    fi;
+          env:
+{%- if defaultPassword is defined %}
+            - name: RABBITMQ_DEFAULT_PASS
+              value: {{defaultPassword}}
+{%- endif %}
+{%- if defaultUser is defined %}
+            - name: RABBITMQ_DEFAULT_USER
+              value: {{defaultUser}}
+{%- endif %}
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: RABBITMQ_ERLANG_COOKIE
+              value: {{rabbitMQErlangCookie}}
+            - name: RABBITMQ_NODENAME
+              value: rabbit@$(MY_POD_NAME)
+      imagePullSecrets:
+        - name: {{imagePullSecrets}}
+      nodeSelector:
+        node-tag: {{nodeTag}}

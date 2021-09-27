@@ -1,0 +1,5 @@
+identity/identity_db:latest,identity
+identity/identity_ui:latest,identity
+identity/token_mt:latest,identity
+identity/homepage_ui:latest,identity
+identity/identity_api:latest,identity

@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dialog-nlp-ehic-contextual-faq-ckpt
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 30Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/dialog/nlp-model-data/nlp-ehic-contextual-faq-ckpt
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dialog-nlp-ehic-contextual-faq-ckpt
+  namespace: dialog
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: dialog-nlp-ehic-contextual-faq-ckpt
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dialog-nlp-lm-roberta
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 30Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/dialog/nlp-model-data/chinese_roberta_wwm_ext_pytorch
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dialog-nlp-lm-roberta
+  namespace: dialog
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: dialog-nlp-lm-roberta

@@ -1,0 +1,122 @@
+1.将本地网络端口转发到pod中的端口
+kubectl port-forward test 8888:8080
+curl localhost:8888
+
+2.查看pod的标签
+kubectl get pods  --show-labels
+
+3.查看pod的特定标签
+kubectl get pods -L creation_method,env
+
+4.为test Pod添加creation_method标签
+kubectl label pods test creation_method=manual
+
+5.修改test Pod上的env=prod标签更改为env=debug
+kubectl label pods test env=debug  --overwrite
+
+6.列出不包含env标签的pod
+kubectl get pods -l '!env'
+
+7.为节点添加标签
+kubectl label nodes node-gpu gpu=true
+
+8.使用标签选择器批量删除pod 
+kubectl delete pod -l rol=canary
+
+9.在线编辑ReplicationController控制器模板
+kubectl edit rc test
+
+10.扩缩容ReplicationController
+kubectl scale rc test --replicas=10
+kubectl scale rc test --replicas=5
+
+11.查看API Resource
+kubectl api-resources
+
+12.查看指定api版本的信息
+kubectl api-resources --api-group apps -o wide
+
+13.刚用过explain查看资源使用的接口
+kubectl explain deployment/pod/deamonset....
+
+14.删除node添加的标签
+kubectl label nodes mynode role-     //直接在标签名后面输入-即可
+
+15.为Pod控制器添加service
+kubectl expose deployment nginx-deploy --name=nginx --port=80 --target-port=80 --protocol=TCP
+
+16.查看运行实例的上一次日志
+kubectl logs --previous <podname> -n <namespaces>
+
+17.获取Ingress的IP地址
+kubectl get ingress
+
+18.创建一个Deployment资源。并记录其历史版本号
+kubectl create -f test-deployment.yaml  --record
+
+19.查看Deployment控制器资源部署状态
+kubectl rollout status deployment kubia
+
+20.设置减慢滚动升级的速度，可以通过设置再Deployment上设置minReadySecinds属性来实现
+kubectl patch deployment kubia -p '{"spec": {"minReadySeconds": 10}}'
+
+21.执行滚动升级
+kubectl set image deployment kubia nodejs=luksa/kubia:v2
+
+22.回滚到上一个版本
+kubectl rollout undo deployment kubia
+
+23.显示升级的版本
+kubectl rollout history deployment kubia
+
+24.回滚到一个特定的Deployment版本
+kubectl rollout undo deployment kubia --to-revision=1
+
+25.为k8s api设置反向代理并指定其端口号
+kubectl proxy --address='0.0.0.0'  --accept-hosts='^*$' --port=32001
+ 
+26.暂停滚动跟新
+kubectl rollout pause deployment expert-ui
+
+27.恢复滚动更新
+kubectl rollout resume deployment expert-ui
+
+28.删除处于terminating状态的Pod,pv
+kubectl delete pod [pod name] --force --grace-period=0 -n [namespace]
+kubectl patch pv [pv name] -p '{"metadata":{"finalizers":null}}'
+kubectl patch pvc [pv name] -p '{"metadata":{"finalizers":null}}'   -n ns
+
+29.查看资源定义时api接口
+kubectl explain ingress
+
+30.节点污点查看
+kubectl describe nodes ecs-aefb-0002  | grep -E '(Roles|Taints)'
+
+31.节点去污
+kubectl taint node  ecs-aefb-0002    node.kubernetes.io/disk-pressure:NoSchedule-
+
+32.用kubectl命令来创建用于docker registry认证的secret:
+kubectl create secret docker-registry myregistrykey 
+--docker-server=DOCKER_REGISTRY_SERVER
+ --docker-username=DOCKER_USER 
+ --docker-password=DOCKER_PASSWORD 
+ --docker-email=DOCKER_EMAIL
+
+也可以直接读取~/.docker文件中的内容来创建
+kubectl create secret docker-registry myregistrykey \
+  --from-file="~/.docker/config.json
+
+33. kubectl config --help
+  current-context 显示 current_context
+  delete-cluster  删除 kubeconfig 文件中指定的集群
+  delete-context  删除 kubeconfig 文件中指定的 context
+  get-clusters    显示 kubeconfig 文件中定义的集群
+  get-contexts    描述一个或多个 contexts
+  rename-context  Renames a context from the kubeconfig file.
+  set             设置 kubeconfig 文件中的一个单个值
+  set-cluster     设置 kubeconfig 文件中的一个集群条目
+  set-context     设置 kubeconfig 文件中的一个 context 条目
+  set-credentials 设置 kubeconfig 文件中的一个用户条目
+  unset           取消设置 kubeconfig 文件中的一个单个值
+  use-context     设置 kubeconfig 文件中的当前上下文
+  view            显示合并的 kubeconfig 配置或一个指定的 kubeconfig 文件

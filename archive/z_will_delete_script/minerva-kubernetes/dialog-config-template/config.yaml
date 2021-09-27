@@ -1,0 +1,88 @@
+---
+apiVersion: v1
+data:
+  rabbitmq-user: admin
+  rabbitmq-erlang-cookie: JXIJVYPVWTIDZGHHSYTY
+  rabbitmq-host: cluster-ip-rabbitmq.dialog.svc.cluster.local
+  rabbitmq-port: "5672"
+  redis-host:	cluster-ip-redis.dialog.svc.cluster.local
+  redis-port: "6379"
+  elasticsearch-host: elasticsearch.dialog.svc.cluster.local
+  elasticsearch-port: "9200"
+kind: ConfigMap
+metadata:
+  name: variables
+  namespace: dialog
+---
+apiVersion: v1
+data:
+  DP_BOT_DIALOG_ROOT_URL: cluster-ip-bot-dialog-ms.dialog.svc.cluster.local:7002
+  DP_BOT_MANAGEMENT_ROOT_URL: cluster-ip-bot-management-ms.dialog.svc.cluster.local:7003
+  DP_CLIENT_MANAGEMENT_ROOT_URL: cluster-ip-client-management-ms.dialog.svc.cluster.local:7008
+  DP_DIALOG_ENGINE_ROOT_URL: cluster-ip-dialog-engine-ms.dialog.svc.cluster.local:7005
+  DP_DIALOG_MESSAGE_ROOT_URL: cluster-ip-dialog-message-ms.dialog.svc.cluster.local:7004
+  DP_DIALOG_REPORT_ROOT_URL: cluster-ip-dialog-report-ms.dialog.svc.cluster.local:7010
+  DP_NLP_DIALOG_ENGINE_ROOT_URL: cluster-ip-nlp-pipeline-proxy.dialog.svc.cluster.local:6001
+  DP_NLP_INTENT_ENGINE_ROOT_URL: cluster-ip-nlp-intent-engine.dialog.svc.cluster.local:6010
+kind: ConfigMap
+metadata:
+  name: microservice
+  namespace: dialog
+---
+apiVersion: v1
+data:
+  PG_BOT_MANAGEMENT_DATABASE: bot-management
+  PG_BOT_MANAGEMENT_HOST: cluster-ip-postgres.dialog.svc.cluster.local
+  PG_BOT_MANAGEMENT_PORT: "5432"
+  PG_BOT_MANAGEMENT_USERNAME: postgres
+kind: ConfigMap
+metadata:
+  name: pg-bot-management
+  namespace: dialog
+---
+apiVersion: v1
+data:
+  PG_CUSTOMER_SERVICE_DATABASE: customer-service
+  PG_CUSTOMER_SERVICE_HOST: cluster-ip-postgres.dialog.svc.cluster.local
+  PG_CUSTOMER_SERVICE_PORT: "5432"
+  PG_CUSTOMER_SERVICE_USERNAME: postgres
+kind: ConfigMap
+metadata:
+  name: pg-customer-service
+  namespace: dialog
+---
+apiVersion: v1
+data:
+  PG_DIALOG_MESSAGE_DATABASE: dialog-message
+  PG_DIALOG_MESSAGE_HOST: cluster-ip-postgres.dialog.svc.cluster.local
+  PG_DIALOG_MESSAGE_PORT: "5432"
+  PG_DIALOG_MESSAGE_USERNAME: postgres
+kind: ConfigMap
+metadata:
+  name: pg-dialog-message
+  namespace: dialog
+---
+apiVersion: v1
+data:
+  PG_DIALOG_REPORT_DATABASE: dialog-report
+  PG_DIALOG_REPORT_HOST: cluster-ip-postgres.dialog.svc.cluster.local
+  PG_DIALOG_REPORT_PORT: "5432"
+  PG_DIALOG_REPORT_USERNAME: postgres
+kind: ConfigMap
+metadata:
+  name: pg-dialog-report
+  namespace: dialog
+---
+apiVersion: v1
+data:
+  # use this command to get base64 string: echo -n 'W3n9JdFMUPYz' | base64
+  postgres-password: VzNuOUpkRk1VUFl6
+  # use this command to get base64 string: echo -n 'UYBEr4L3RXTE' | base64
+  rabbitmq-password: VVlCRXI0TDNSWFRF
+  # use this command to get base64 string: echo -n 'DqZ1gjFKkaqU' | base64
+  redis-password: RHFaMWdqRktrYXFV
+kind: Secret
+metadata:
+  name: credential
+  namespace: dialog
+type: Opaque

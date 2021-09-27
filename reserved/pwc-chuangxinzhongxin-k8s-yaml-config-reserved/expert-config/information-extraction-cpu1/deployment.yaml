@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: information-extraction-cpu1
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-information-extraction-cpu1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-information-extraction-cpu1
+    spec:
+      containers:
+        - name: information-extraction-cpu1
+          image: 10.157.112.207:5001/expert/information_extraction:latest
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities: {}
+            privileged: true
+            procMount: Default
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          env:
+            - name: MT_CPU
+              value: "1"
+            - name: MT_ESHOST
+              value: http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200
+            - name: MT_INSTANCE_ID
+              value: mt.cpu.1
+            - name: MT_MQHOST
+              value: cluster-ip-rabbitmq.expert.svc.cluster.local
+            - name: MT_TRAINABLE
+              value: ""
+            - name: MT_MACHINE_ID
+              value: ""
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/package/data/workspace
+              name: workspace
+            - mountPath: /app/package/data/session
+              name: session
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: information-extraction-workspace
+        - name: session
+          persistentVolumeClaim:
+            claimName: information-extraction-session
+      imagePullSecrets:
+        - name: meinenghua
+      nodeSelector:
+        node-tag: gpu-001

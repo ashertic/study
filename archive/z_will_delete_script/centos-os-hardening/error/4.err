@@ -1,0 +1,29 @@
+"6.1.8 Ensure permissions on /etc/group- are configured" : [FAILED]
+The /etc/group- file contains a backup list of all the valid groups defined in the system.
+
+Rationale:
+
+It is critical to ensure that the /etc/group- file is protected from unauthorized access. 
+Although it is protected by default, the file permissions could be changed either inadvertently or through malicious actions.
+
+The file /etc/group- with fmode owner: root group: root mode: 0644 attr: ---------------- uid: 0 gid: 0 uneven permissions : 
+FALSE  does not match the policy value owner: root group: root mask: 0177 uneven permissions : TRUE 
+
+
+Remote value: 
+
+/etc/group-
+
+Solution : 
+
+Run the following command to set permissions on /etc/group- :
+# chown root:root /etc/group-
+# chmod u-x,go-wx /etc/group-
+
+See Also : 
+
+https://workbench.cisecurity.org/files/1858
+
+Reference(s) : 
+
+800-53|CM-6,PCI-DSSv3.1|2.2.4,PCI-DSSv3.2|2.2.4,800-171|3.4.2,CSF|PR.IP-1,ITSG-33|CM-6,CSCv6|3.1,LEVEL|1S

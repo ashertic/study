@@ -1,0 +1,18 @@
+"3.4.2 Ensure /etc/hosts.allow is configured" : [FAILED]
+The /etc/hosts.allow file supports access control by IP and helps ensure that only authorized systems can connect to the system.
+
+The file "/etc/hosts.allow" does not contain "^[\s]*ALL[\s]*:"
+
+Solution : 
+
+Run the following command to create /etc/hosts.allow: 
+# echo 'ALL: <net>/<mask>, <net>/<mask>, ...' >/etc/hosts.allow where each <net>/<mask> combination (for example, 
+'192.168.1.0/255.255.255.0') represents one network block in use by your organization that requires access to this system.
+
+See Also : 
+
+https://workbench.cisecurity.org/files/1858
+
+Reference(s) : 
+
+800-53|SC-7,800-171|3.13.1,800-171|3.13.6,CN-L3|7.1.2.2(c),CSF|PR.PT-4,ITSG-33|SC-7,LEVEL|1S,PCI-DSS|2.2.4

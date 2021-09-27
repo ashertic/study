@@ -1,0 +1,129 @@
+{
+  "nodes": {
+    "pEIuFfvBo": {
+      "type": "input",
+      "moduleId": "fzWGWfF9D0",
+      "width": 200,
+      "center": {
+        "x": 663,
+        "y": 73
+      },
+      "options": {
+        "name": "default"
+      }
+    },
+    "sGzupV-mIL": {
+      "type": "cpu",
+      "moduleId": "0tzLKktKsj",
+      "width": 200,
+      "center": {
+        "x": 660,
+        "y": 232
+      },
+      "options": {},
+      "isLoop": false
+    },
+    "lp5O1fAhyl": {
+      "type": "cpu",
+      "moduleId": "4FXwGSK5I",
+      "width": 200,
+      "center": {
+        "x": 937,
+        "y": 383
+      },
+      "options": {
+        "dpi": "144"
+      },
+      "isLoop": false
+    },
+    "KFXASMFZuE": {
+      "type": "expert",
+      "moduleId": "lyFcWOBueq",
+      "width": 200,
+      "center": {
+        "x": 841,
+        "y": 798
+      },
+      "options": {
+        "name": "OCR",
+        "priority": "1"
+      }
+    },
+    "SF2qR6vgeT": {
+      "type": "gpu",
+      "moduleId": "Asux__TMw",
+      "width": 200,
+      "center": {
+        "x": 703,
+        "y": 547
+      },
+      "options": {
+        "correct_direction": "true",
+        "detect_table": "true"
+      },
+      "isLoop": false
+    }
+  },
+  "edges": [
+    {
+      "start": {
+        "id": "pEIuFfvBo",
+        "key": "file"
+      },
+      "end": {
+        "id": "sGzupV-mIL",
+        "key": "file"
+      }
+    },
+    {
+      "start": {
+        "id": "sGzupV-mIL",
+        "key": "pdf"
+      },
+      "end": {
+        "id": "lp5O1fAhyl",
+        "key": "pdf"
+      }
+    },
+    {
+      "start": {
+        "id": "lp5O1fAhyl",
+        "key": "images"
+      },
+      "end": {
+        "id": "SF2qR6vgeT",
+        "key": "image"
+      }
+    },
+    {
+      "start": {
+        "id": "sGzupV-mIL",
+        "key": "image"
+      },
+      "end": {
+        "id": "SF2qR6vgeT",
+        "key": "image"
+      }
+    },
+    {
+      "start": {
+        "id": "SF2qR6vgeT",
+        "key": "char_regions"
+      },
+      "end": {
+        "id": "KFXASMFZuE",
+        "key": "regions"
+      }
+    },
+    {
+      "start": {
+        "id": "SF2qR6vgeT",
+        "key": "image"
+      },
+      "end": {
+        "id": "KFXASMFZuE",
+        "key": "images"
+      }
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "search",
+    "project": "shenpi-search",
+    "env": "development",
+    "description": "这是个苏州审批局企业搜索的配置文件，测试配置，部署新的Image前，先使用这个172上测试",
+    "mode": "docker",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "../project-shenpi-search/data_root",
+    "imageOutputRootDir": "../project-shenpi-search/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "shenpi-search-elasticsearch",
+      "namespace": "search",
+      "imageCategory": "thirdparty",
+      "srcImage": "elasticsearch:7.8.1",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "shenpi-search-elasticsearch",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "9200:9200"
+        ],
+        "envs": [
+          "discovery.type=single-node"
+        ],
+         "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "shenpi-search-pg",
+      "namespace": "search",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "shenpi-search-pg",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "5432:5432"
+        ],
+        "envs": [
+          "POSTGRES_USER=\"postgres\"",
+          "POSTGRES_PASSWORD=\"postgres\""
+        ],
+        "volumes": [
+          "/postgres:/var/lib/postgresql/data"
+        ],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "shenpi-search-redis",
+      "namespace": "search",
+      "imageCategory": "thirdparty",
+      "srcImage": "redis:5.0.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "shenpi-search-redis",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "6379:6379"
+        ],
+        "envs": [
+          "REDIS_PASSWORD=\"bzpXOAb5GkBO\""
+        ],
+        "volumes": [],
+        "command": "redis-server --requirepass \"bzpXOAb5GkBO\" --appendonly \"yes\""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api_shenpi",
+      "namespace": "search",
+      "imageCategory": "search",
+      "srcImage": "search/api_shenpi:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "api_shenpi",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "8901:8901"
+        ],
+        "envs": [
+          "SANIC_HOST=\"0.0.0.0\"",
+          "SANIC_PORT=\"8901\"",
+          "PG_HOST=\"192.168.1.9\"",
+          "PG_PORT=\"5432\"",
+          "PG_USERNAME=\"postgres\"",
+          "PG_PASSWORD=\"postgres\"",
+          "SEARCH_DB_NAME=\"search_shenpi\"",
+          "REDIS=\"redis://:bzpXOAb5GkBO@192.168.1.9:6379\"",
+          "DATA_ROOT=\"/app/search-proj-data\""
+        ],
+        "volumes": [
+          "/search/search-proj-data:/app/search-proj-data"
+        ],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "job_shenpi",
+      "namespace": "search",
+      "imageCategory": "search",
+      "srcImage": "search/job_shenpi:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "job_shenpi",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [],
+        "envs": [
+          "REDIS=\"redis://:bzpXOAb5GkBO@192.168.1.9:6379\"",
+          "PG_HOST=\"192.168.1.9\"",
+          "PG_PORT=\"5432\"",
+          "PG_USERNAME=\"postgres\"",
+          "PG_PASSWORD=\"postgres\"",
+          "SEARCH_DB_NAME=\"search_shenpi\"",
+          "ES_HOST=\"192.168.1.9\"",
+          "ES_PORT=\"9200\"",
+          "DATA_ROOT=\"/app/search-proj-data\""
+        ],
+        "volumes": [
+          "/search/search-proj-data:/app/search-proj-data"
+        ],
+        "command": ""
+      }
+    }
+  ],
+  "dbInitializers": [
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/"
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "search_shenpi",
+        "server": "192.168.1.9",
+        "port": "5432",
+        "user": "postgres",
+        "password": "postgres",
+        "diskDir": "/dbbackup/search",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

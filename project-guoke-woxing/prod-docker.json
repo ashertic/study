@@ -1,0 +1,147 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "woxing",
+    "project": "project",
+    "env": "prod",
+    "description": "这是国科沃行的生产环境配置",
+    "mode": "docker",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "/data1/project-guoke-woxing/data_root",
+    "imageOutputRootDir": "/data1/project-guoke-woxing/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "expert_pg",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "56000:5432"
+        ],
+        "envs": [
+          "POSTGRES_PASSWORD=\"Ku5C43CHb9\""
+        ],
+        "volumes": [
+          "/postgres:/var/lib/postgresql/data"
+        ],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "redis",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "redis:5.0.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "ultra_redis",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "6381:6379"
+        ],
+        "envs": [
+          "REDIS_PASSWORD=\"bz1XLAb3GKb7\""
+        ],
+        "volumes": [],
+        "command": "redis-server --requirepass \"bz1XLAb3GKb7\" --appendonly \"yes\""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_runtime",
+      "namespace": "expert",
+      "imageCategory": "metis_ultra",
+      "srcImage": "metis_ultra/metis_runtime:beta",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_runtime",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "dockerRunOptions": [
+          "--shm-size 32G",
+          "--ulimit core=100"
+        ],
+        "ports": [
+          "8000:8000",
+          "8265:8265"
+        ],
+        "envs": [
+          "DATA_DIR=\"/ultra/data\"",
+          "MODULE_DIR=\"/ultra/modules\"",
+          "WHEEL_DIR=\"/ultra/wheels\"",
+          "RESOURCE_ROOT=\"/ultra/resource\"",
+          "MT_GPU=\"0\"",
+          "PYTHONPATH=\"/ultra\"",
+          "POSTGRES=\"postgres://postgres:Ku5C43CHb9@112.80.39.75:56000/metis_ultra\"",
+          "REDIS=\"redis://user:bz1XLAb3GKb7@112.80.39.75:6381\"",
+          "CPU_EXECUTOR_NUMBER=1",
+          "GPU_EXECUTOR_NUMBER=1",
+          "WORKER_NUMBER=2",
+          "EXECUTOR_GPU_NUM=1",
+          "QUEUE_CAPACITY=200"
+        ],
+        "volumes": [
+          "/metis_runtime/data:/ultra/data",
+          "/metis_runtime/dependencies/resource:/ultra/resource",
+          "/metis_runtime/dependencies/wheels:/ultra/wheels",
+          "/metis_runtime/module_library:/ultra/modules"
+        ],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "woxing_api",
+      "namespace": "woxing",
+      "imageCategory": "privatization",
+      "srcImage": "privatization/woxing_api",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "woxing_api",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "37047:7047"
+        ],
+        "envs": [
+          "POSTGRES=\"postgres:Ku5C43CHb9@112.80.39.75:56000\"",
+          "SERVICE_METIS=\"http://112.80.39.75:8000\"",
+          "PAGE_COUNT_WORKFLOW_ID=\"Ganqg9D46hKiT67qYdicA\"",
+          "RECOGNITION_WORKFLOW_ID=\"gQX3iZnkUoya86kRNFdz7U\"",
+          "PARTNER_URL=\"http://new.cargoware.com/api/cargo-bkg-api/bkg/sea/bookingnote/recognizeResult/coordinate\"",
+          "PARTNER_API_TOKEN=\"prod5AdbzO5OEeOpvgAVXUFE0A\""
+        ],
+        "volumes": [],
+	      "command": ""
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "metis-ultra-db-initalizer",
+      "imageCategory": "metis_ultra",
+      "srcImage": "metis_ultra/metis_db_migration:latest",
+      "useHostNetwork": false,
+      "envs": [
+        "POSTGRES=\"postgres:Ku5C43CHb9@112.80.39.75:56000\""
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/"
+  }
+}

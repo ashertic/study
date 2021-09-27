@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dialog-report-pipeline
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-dialog-report-pipeline
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-dialog-report-pipeline
+    spec:
+      containers:
+      - name: dialog-report-pipeline
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/pipeline_dialog_report:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: PG_BOT_MANAGEMENT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: credential
+        - name: PG_CUSTOMER_SERVICE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: credential
+        - name: PG_DIALOG_MESSAGE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: credential
+        - name: PG_DIALOG_REPORT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: credential                                          
+        envFrom:
+        - configMapRef:
+            name: microservice
+        - configMapRef:
+            name: pg-bot-management
+        - configMapRef:
+            name: pg-customer-service
+        - configMapRef:
+            name: pg-dialog-message
+        - configMapRef:
+            name: pg-dialog-report                                    
+        volumeMounts:
+        - mountPath: /root/logs
+          name: logdata    
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: logdata
+        persistentVolumeClaim:
+          claimName: dialog-logs 

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-ip-homepage-ui
+  namespace: identity
+spec:
+  selector:
+    app: deployment-homepage-ui
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: ClusterIP
+  

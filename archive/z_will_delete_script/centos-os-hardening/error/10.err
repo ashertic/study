@@ -1,0 +1,35 @@
+"3.6.3 Ensure loopback traffic is configured" : [WARNING]
+Loopback traffic is generated between processes on machine and is 
+typically critical to operation of the system. 
+The loopback interface is the only place that loopback network (127.0.0.0/8) traffic should be seen, 
+all other interfaces should ignore traffic on this network as an anti-spoofing measure.
+
+   NOTE - Nessus has not performed this scan. Please review the output to ensure it matches benchmark and site policy.
+
+Remote value: 
+
+The command '/usr/sbin/iptables -L INPUT -v -n; /usr/sbin/iptables -L OUTPUT -v -n' returned : 
+
+Chain INPUT (policy ACCEPT 2202 packets, 687K bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+ 298M  113G cali-INPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* cali:Cz_u1IQiXIMmKD4c */
+3181K  324M KUBE-SERVICES  all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate NEW /* kubernetes service portals */
+3181K  324M KUBE-EXTERNAL-SERVICES  all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate NEW /* kubernetes externally-visible service portals */
+ 281M  106G KUBE-FIREWALL  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+Chain OUTPUT (policy ACCEPT 2220 packets, 793K bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+ 295M   90G cali-OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* cali:tVnHkvAo15HuiPy0 */
+3072K  224M KUBE-SERVICES  all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate NEW /* kubernetes service portals */
+ 286M   86G KUBE-FIREWALL  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Solution : 
+
+Run the following commands to implement the loopback rules: # iptables -A INPUT -i lo -j ACCEPT# iptables -A OUTPUT -o lo -j ACCEPT# iptables -A INPUT -s 127.0.0.0/8 -j DROP
+
+See Also : 
+
+https://workbench.cisecurity.org/files/1858
+
+Reference(s) : 
+
+800-53|SC-7,800-171|3.13.1,ITSG-33|SC-7,LEVEL|1S

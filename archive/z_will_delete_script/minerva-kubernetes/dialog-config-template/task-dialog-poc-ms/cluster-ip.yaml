@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-ip-task-dialog-poc-ms
+  namespace: dialog
+spec:
+  selector:
+    app: deployment-task-dialog-poc-ms
+  ports:
+    - protocol: TCP
+      port: 7021
+      targetPort: 7021
+  type: ClusterIP
+  

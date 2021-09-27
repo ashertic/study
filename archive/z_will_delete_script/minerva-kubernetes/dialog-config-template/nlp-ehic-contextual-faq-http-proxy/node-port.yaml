@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-port-nlp-ehic-contextual-faq-http-proxy
+  namespace: dialog
+spec:
+  selector:
+    app: deployment-nlp-ehic-contextual-faq-http-proxy
+  ports:
+    - protocol: TCP
+      nodePort: 32681
+      port: 6681
+      targetPort: 6681
+  type: NodePort

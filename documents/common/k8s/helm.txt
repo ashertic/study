@@ -1,0 +1,9 @@
+# 灰度发布
+
+helm history  homepage  -n istio-meinenghua
+
+helm  install   homepage      --namespace istio-meinenghua --values ./mychart/values.yaml --set productionDeployment.weight=0,canaryDeployment.weight=100  ./mychart/
+
+helm upgrade    homepage      --namespace istio-meinenghua --values ./mychart/values.yaml --set productionDeployment.weight=0,canaryDeployment.weight=100  ./mychart/
+
+helm rollback homepage -n istio-meinenghua 2

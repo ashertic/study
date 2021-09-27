@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{name}}
+  namespace: {{namespace}}
+spec:
+  selector:
+    app: {{appSelector}}
+  ports:
+{%- for one_port in ports %}
+    - protocol: {{one_port.protocol}}
+      port: {{one_port.port}}
+      targetPort: {{one_port.targetPort}}
+{%- endfor %}
+  type: ClusterIP

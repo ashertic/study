@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlp-ehic-contextual-faq-http-proxy
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-nlp-ehic-contextual-faq-http-proxy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-nlp-ehic-contextual-faq-http-proxy
+    spec:
+      containers:
+      - name: nlp-ehic-contextual-faq-http-proxy
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/ehic_conv_service_http_proxy:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: EHIC_CONV_SERVICE_HOST
+          value: cluster-ip-nlp-ehic-contextual-faq.dialog.svc.cluster.local
+        - name: EHIC_CONV_SERVICE_PORT
+          value: "6680"
+        - name: EHIC_CONV_SERVICE_LOGGING_LEVEL
+          value: "DEBUG"
+        - name: AUTORPC_HTTP_PROXY_PORT
+          value: "6681"
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER
+

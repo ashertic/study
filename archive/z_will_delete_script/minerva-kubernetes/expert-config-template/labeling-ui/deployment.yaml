@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labeling-ui
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-labeling-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-labeling-ui
+    spec:
+      containers:
+      - name: labeling-ui
+        image: IMAGE_BASEURL_PLACEHOLDER/expert/labeling_ui:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: VUE_APP_HOMEPAGE_ROOT_URL
+          value: HOMEPAGE_UI_URL_PLACEHOLDER
+        - name: VUE_APP_ACCOUNT_ROOT_URL
+          value: IDENTITY_UI_URL_PLACEHOLDER
+        - name: VUE_APP_COOKIE_DOMAIN_NAME
+          value: "APP_COOKIE_DOMAIN_NAME_PLACEHOLDER"
+        - name: VUE_APP_IDENTITY_API_HOST
+          value: IDENTITY_API_URL_PLACEHOLDER/v1
+        - name: VUE_APP_READER_API_HOST
+          value: LABEL_API_URL_PLACEHOLDER
+        - name: VUE_APP_OCR_API_ROOT_URL
+          value: ""
+        - name: VUE_APP_TENANT
+          value: "VUE_APP_TENANT_PLACEHOLDER"
+        - name: VUE_APP_PRIMARY_COLOR
+          value: "VUE_APP_PRIMARY_COLOR_PLACEHOLDER"
+        - name: VUE_APP_NAME
+          value: "LABELING_UI_VUE_APP_NAME_PLACEHOLDER"
+        - name: VUE_APP_FOOTER_TEXT
+          value: "VUE_APP_FOOTER_TEXT_PLACEHOLDER"
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: EXPERT_NODE_SELECTOR_PLACEHOLDER

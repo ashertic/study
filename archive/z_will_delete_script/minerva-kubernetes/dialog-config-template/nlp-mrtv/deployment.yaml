@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlp-mrtv
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-nlp-mrtv
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-nlp-mrtv
+    spec:
+      containers:
+      - name: nlp-mrtv
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/nlp_mrtv:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: MRTV_LOGGING_LEVEL
+          value: INFO
+        - name: MRTV_PORT
+          value: "60051"
+        - name: ELASTICSEARCH_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: elasticsearch-host
+              name: variables
+              optional: false
+        - name: ELASTICSEARCH_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: elasticsearch-port
+              name: variables
+              optional: false  
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER

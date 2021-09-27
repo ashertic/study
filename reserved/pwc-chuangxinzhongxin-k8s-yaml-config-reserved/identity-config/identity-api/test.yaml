@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test
+  namespace: identity
+spec:
+  selector:
+    matchLabels:
+      app: test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      containers:
+      - name: test
+        image: 10.157.112.207:5001/alpine:latest
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES_IDENTITY
+          value: identity-management
+        - name: VPROFILE_ENDPOINT
+          value: external-vprofile-service.identity.svc.cluster.local:80
+        envFrom:
+        - configMapRef:
+            name: variables
+            optional: false
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: gpu-001
+

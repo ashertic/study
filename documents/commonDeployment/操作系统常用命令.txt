@@ -1,0 +1,84 @@
+1.查看centos操作系统五路CPU个数
+cat /proc/cpuinfo | grep "physical id"| sort| uniq| wc -l
+
+2.查看每个物理CPU中core的个数（即核数）
+cat /proc/cpuinfo | grep "cpu cores"| uniq
+
+3.查看逻辑CPU的个数
+cat /proc/cpuinfo | grep "processor"| wc -l
+
+4.下载rpm包 centos
+yumdownloader --resolve --destdir=./   rpm包名称
+
+5.安装目录下面所有rmp包，并解决其依赖关系
+# 安装当前目录所有rpm包
+rpm -ivh --replacefiles --replacepkgs *.rpm
+
+# 强制安装，忽略依赖
+rpm -ivh *.rpm --force --nodeps
+
+#
+rpm -Uvh --force --nodeps *.rpm
+
+6.配置ssh免密登录
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+ssh-copy-id root@bigdata2
+
+7.配置ubuntu18.04设置sudo免密码不用输入密码的方式
+
+
+
+8.打包并分割：
+tar -zcvf suzhoushenpiju.tar.gz suzhoushenpiju
+split -b 524288000 -d -a 2 suzhoushenpiju.tar.gz suzhoushenpiju.tar.gz.
+
+将分割打包的文件，重新解压缩
+cat donghangpoc.tar.gz.* | tar -zxv
+
+
+9.删除所有的docker image
+docker rmi $(docker image ls | awk '{print $1":"$2}')
+
+10.curl命令常用参数
+-X:指定什么命令，如GET,POST
+curl -X GET  http://localhost:8080/search?data=123
+curl -X POST -d "data=123&key=456" http://localhost:8080/search
+
+-H:自定义头信息传递给服务器
+curl -H "Host:192.168.0.1" http://localhost:8080
+
+-s:静默模式，不输出任何东西
+curl http://localhost:8080
+
+-i:输出包括response头信息
+curl -i http://localhost
+
+-I:只显示请求头部信息
+curl -I http://localhost:8080
+
+11.查看当前目录文件大小
+du -lh --max-depth=1
+
+12.查看机器GPU型号
+lspci  | grep -i vga
+
+13.ubuntu 1804服务包离线安装
+
+删除此目录中的文件
+/var/cache/apt/archives
+
+安装需要的部署包
+apt-get -d install python3-pip
+
+# 复制到需要安装的服务器上执行以下命令
+安装服务包
+dpkg -i *.deb
+
+如果有环境依赖,则使用强制安装
+dpkg -i --force-architecture *.deb
+
+14. 后台执行命令并将其信息输出到指定文件
+nohup tar -zxvf intelligence-mt-data.tar.gz     > file.log       2>&1 &
+
+15. 查看机器的重启时间
+last reboot | less

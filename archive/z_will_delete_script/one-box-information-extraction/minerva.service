@@ -1,0 +1,14 @@
+[Unit]
+Description=Restart minerva docker container service when boot
+After=network.target
+After=systemd-user-sessions.service
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/testuser/minver-service-setup/restart.sh
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target
+

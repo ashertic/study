@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-api
+  namespace: identity
+spec:
+  selector:
+    matchLabels:
+      app: deployment-identity-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-identity-api
+    spec:
+      containers:
+      - name: identity-api
+        image: 10.158.12.45:5001/identity/identity_api:latest
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES_IDENTITY
+          value: identity-management
+        envFrom:
+        - configMapRef:
+            name: variables
+            optional: false
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: gpu-001

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: information-extraction-gpu0
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-information-extraction-gpu0
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-information-extraction-gpu0
+    spec:
+      containers:
+      - name: information-extraction-gpu0
+        image: IMAGE_BASEURL_PLACEHOLDER/expert/information_extraction:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: MT_ESHOST
+          value: http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200
+        - name: MT_GPU
+          value: "0"
+        - name: MT_TRAINER
+          value: "0"
+        - name: MT_INSTANCE_ID
+          value: mt.gpu0
+        - name: MT_MQHOST
+          value: cluster-ip-rabbitmq.expert.svc.cluster.local
+        - name: MT_TRAINABLE
+          value: "INFORMATION_EXTRACTION_TRAINING_PERIOD_PLACEHOLDER"
+        - name: MT_MACHINE_ID
+          value: "INFORMATION_EXTRACTION_SOFT_KEY_PLACEHOLDER"
+        resources: {}
+          # limits:
+          #   nvidia.com/gpu: "1"
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities: {}
+          privileged: true
+          procMount: Default
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        volumeMounts:
+        - mountPath: /app/package/data/workspace
+          name: workspace
+        - mountPath: /app/package/data/session
+          name: session  
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: INFORMATION_EXTRACTION_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: workspace
+        persistentVolumeClaim:
+          claimName: information-extraction-workspace
+      - name: session
+        persistentVolumeClaim:
+          claimName: information-extraction-session

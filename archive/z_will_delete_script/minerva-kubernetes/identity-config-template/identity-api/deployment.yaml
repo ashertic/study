@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-api
+  namespace: identity
+spec:
+  selector:
+    matchLabels:
+      app: deployment-identity-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-identity-api
+    spec:
+      containers:
+      - name: identity-api
+        image: IMAGE_BASEURL_PLACEHOLDER/identity/identity_api:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES_IDENTITY
+          value: identity-management
+        - name: VPROFILE_ENDPOINT
+          value: external-vprofile-service.identity.svc.cluster.local:80/vProfile.API/api
+        - name: VPROFILE_APIACCESS
+          value: "MnJBbHM3S3BwaUhONzkzNlZtRC9qYVlIVjZKS0E1OUpoNHFZL05iR1licXdTQUM2MGMwZlh3PT0="
+        - name: SAML_HOME_PAGE
+          value: https://cn-idir.asia.pwcinternal.com:50000
+        - name: SAML_NAME_ID_FORMAT
+          value: email
+        - name: SAML_IDP_ENTITY_ID
+          value: ofis:pwc:broker:d
+        - name: SAML_IDP_SIGNING_CERT
+          value: "MIIDQjCCAiqgAwIBAgIQOctgSIknrbZI6x6k5oMIPzANBgkqhkiG9w0BAQsFADArMSkwJwYDVQQDEyBUaGVPcHRpbWFsQ2xvdWRTaWduaW5nQ2VydFB3Q0RldjAgFw0xOTA1MDEwNDAwMDBaGA8yMDUwMTIzMTA0MDAwMFowKzEpMCcGA1UEAxMgVGhlT3B0aW1hbENsb3VkU2lnbmluZ0NlcnRQd0NEZXYwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCPgJVkEQgDbEdF9wrTP19DOgNA+yXVzOmFkuUx/iMIaPLBHG7JXuG6gS5XvRpTUSt1TB+a6IOmzjjgKb2SERRVuhpLtzWWftb4m3xOzgPSBkwXwCMv0kbUZsDjT4a6JIwBf2QN4A3Wak0QtQ86evgeJ2itUPuN/5l3DpNeLVHhc64D9LdBdBFMFzK3mOagMcETn+dv0Ofy6Qs1+K0sfBBtfEzr6XptEI9O+XVWkkOIr2RqOPoDdm0hu98USjXjWGqqw/t0NwUQ3Fvp5wvczEExjcPVBWWGu9WEunP26XMDQDCv+G63vdAIRlZ8vn3zkfxcOivCrjLAgOm3cd725ptAgMBAAGjYDBeMFwGA1UdAQRVMFOAEG7a6Tlpb33QUD0cN5aSf0+hLTArMSkwJwYDVQQDEyBUaGVPcHRpbWFsQ2xvdWRTaWduaW5nQ2VydFB3Q0RldoIQOctgSIknrbZI6x6k5oMIPzANBgkqhkiG9w0BAQsFAAOCAQEAVR/utLikBGmssoLcpEze6gRMHNhowrwf59Hf0gR8Sknekxwj2GQQdB5+TsrwM5MXP9R4yxrvrUdpy54re7vitD3+rmicdZzLK0mOXJXjAFZhMBLmByQrfhua70oFQGHV3IZArvw72Yn0LgXCJ1m/C68QqmfEWTLp4Q7fbyEFtHm0Gnxl9rX1281z4dO3uK7pcZ7obpXuFh5/0coih9nX79FszRQjxmaKofrtc15r1tzkw48x9Kp8Pe+Cb25ihrKp2bSEY3QQ5kCXtnGmm2Rgek04sfqbqW3PaUxMZ8iDSo0EZd5ef5RCIWsj9U2WnF1f99sEoxPDBsUrXQMI9cssdw=="
+        - name: SAML_IDP_SSO_LOCATION
+          value: https://fedsvc-dev.pwc.com/ofisd/
+        - name: SAML_IDP_SLO_LOCATION
+          value: https://fedsvc-dev.pwc.com/ofisd/
+        - name: SAML_SP_ENTITY_ID
+          value: urn:saml2:cn-idir:p
+        - name: SAML_SP_ACS_LOCATION
+          value: https://cn-idir.asia.pwcinternal.com/logincallback
+        - name: SAML_SP_SLO_LOCATION
+          value: https://cn-idir.asia.pwcinternal.com/logoutcallback
+        - name: POSTGRES
+          value: postgres:pyq5qaog3O00QeESDx6x@cluster-ip-postgres.identity.svc.cluster.local:5432
+        - name: SERVICE_SECRET
+          value: http://cluster-ip-token-mt.identity.svc.cluster.local:5100/secret
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: IDENTITY_NODE_SELECTOR_PLACEHOLDER

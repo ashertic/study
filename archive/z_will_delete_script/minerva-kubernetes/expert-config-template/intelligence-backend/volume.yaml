@@ -1,0 +1,180 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: intelligence-mt-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 500Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/expert/intelligence-mt-data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: intelligence-mt-data
+  namespace: expert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: intelligence-mt-data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: intelligence-mt-resource
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 30Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/expert/intelligence-mt-resource
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: intelligence-mt-resource
+  namespace: expert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: intelligence-mt-resource
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: intelligence-mt-models
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 30Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/expert/intelligence-mt-models
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: intelligence-mt-models
+  namespace: expert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: intelligence-mt-models
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: intelligence-mt-configs
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/expert/intelligence-mt-configs
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: intelligence-mt-configs
+  namespace: expert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: intelligence-mt-configs
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: intelligence-mt-wheel
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 100Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/expert/intelligence-mt-wheel
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: intelligence-mt-wheel
+  namespace: expert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: intelligence-mt-wheel
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: intelligence-mt-model-repository
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 200Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/expert/intelligence-mt-model-repository
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: intelligence-mt-model-repository
+  namespace: expert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: intelligence-mt-model-repository

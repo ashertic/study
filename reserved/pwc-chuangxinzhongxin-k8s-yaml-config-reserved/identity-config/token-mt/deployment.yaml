@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: token-mt
+  namespace: identity
+spec:
+  selector:
+    matchLabels:
+      app: deployment-token-mt
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-token-mt
+    spec:
+      containers:
+      - name: token-mt
+        image: 10.157.112.207:5001/identity/token_mt:latest
+        imagePullPolicy: Always
+        env:
+        - name: SECRET_EXPIRED_DAYS
+          value: "7"
+        - name: SECRET_KEY
+          value: jd98u3oijmrf9u02p3kemf9q7uyrhfgnm4tuer9vcjkm34ijo
+        - name: SECRET_STATIC
+          value: "true"
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: gpu-001
+
+

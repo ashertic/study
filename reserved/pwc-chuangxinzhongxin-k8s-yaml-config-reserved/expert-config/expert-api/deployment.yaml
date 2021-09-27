@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expert-api
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-expert-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-expert-api
+    spec:
+      containers:
+      - name: expert-api
+        image: 10.157.112.207:5001/expert/expert_api:latest
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES
+          value: postgres:GiM6G53ZsnSQ@cluster-ip-postgres.expert.svc.cluster.local:5432
+        - name: POSTGRES_DATABASE
+          value: expert
+        - name: SERVICE_SECRET
+          value: http://cluster-ip-token-mt.identity.svc.cluster.local:5100/secret
+        - name: SERVICE_INTELLIGENCE
+          value: http://cluster-ip-intelligence-mt.expert.svc.cluster.local:3000
+        - name: MINERVAOCR
+          value: ""
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: gpu-001

@@ -1,0 +1,493 @@
+"6.1.11 Ensure no unowned files or directories exist" : [FAILED]
+Sometimes when administrators delete users from the password file they neglect to remove all files owned by those users from the system.
+
+Rationale:
+
+A new user who is assigned the deleted user's user ID or group ID may then end up 'owning' these files, and thus have more access on the system than was intended.
+
+The following 996 files are orphaned::
+
+  /home/appuser2
+     owner: 9987, group: 9988, permissions: 0700
+
+  /home/appuser2/.bash_logout
+     owner: 9987, group: 9988, permissions: 0644
+
+  /home/appuser2/.bash_profile
+     owner: 9987, group: 9988, permissions: 0644
+
+  /home/appuser2/.bashrc
+     owner: 9987, group: 9988, permissions: 0644
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/etc/gshadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/etc/shadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/etc/shadow-
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/run/utmp
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/var/log/btmp
+     owner: root, group: 43, permissions: 0660
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/var/log/lastlog
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/var/log/wtmp
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/31d8c7b4a54506bf8dcd26bc005857339cd4aecea21759537cbf0a2227736cbb/diff/etc/gshadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/31d8c7b4a54506bf8dcd26bc005857339cd4aecea21759537cbf0a2227736cbb/diff/etc/gshadow-
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/31d8c7b4a54506bf8dcd26bc005857339cd4aecea21759537cbf0a2227736cbb/diff/etc/shadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/31d8c7b4a54506bf8dcd26bc005857339cd4aecea21759537cbf0a2227736cbb/diff/etc/shadow-
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/31d8c7b4a54506bf8dcd26bc005857339cd4aecea21759537cbf0a2227736cbb/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/31d8c7b4a54506bf8dcd26bc005857339cd4aecea21759537cbf0a2227736cbb/diff/var/lib/apt/lists/auxfiles
+     owner: 100, group: root, permissions: 0755
+
+  /var/lib/docker/overlay2/31d8c7b4a54506bf8dcd26bc005857339cd4aecea21759537cbf0a2227736cbb/diff/var/lib/apt/lists/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/31d8c7b4a54506bf8dcd26bc005857339cd4aecea21759537cbf0a2227736cbb/diff/var/log/lastlog
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/19f8cb40479b62772dff3a1a255daf27f5a1c639dcc9105682d7fb197272c7ce/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/19f8cb40479b62772dff3a1a255daf27f5a1c639dcc9105682d7fb197272c7ce/diff/var/lib/apt/lists/auxfiles
+     owner: 100, group: root, permissions: 0755
+
+  /var/lib/docker/overlay2/19f8cb40479b62772dff3a1a255daf27f5a1c639dcc9105682d7fb197272c7ce/diff/var/lib/apt/lists/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/73f701f0b52b6dceb7299a3e8e75981bfbfb03542209bda2936c1b5cea2381e3/diff/etc/shadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/etc/gshadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/etc/shadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/run/utmp
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/c81d9d63f1c6678e25976eb1b2183aabde4ae83595bd267fea4ec57789f4b9b1/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/etc/gshadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/etc/shadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/run/utmp
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/var/log/btmp
+     owner: root, group: 43, permissions: 0660
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/var/log/lastlog
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/var/log/wtmp
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/cd081bbacda36627dca08a53ba5106ed9013e2383b268d0988e44211dc4c3106/diff/home
+     owner: 65532, group: 65532, permissions: 0755
+
+  /var/lib/docker/overlay2/cd081bbacda36627dca08a53ba5106ed9013e2383b268d0988e44211dc4c3106/diff/home/nonroot
+     owner: 65532, group: 65532, permissions: 0700
+
+  /var/lib/docker/overlay2/3ce4b4480238ba5db32af8ce2464f1483f57a0d6b94ac7bdf9cd168fb0bdf241/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/etc/gshadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/etc/gshadow-
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/etc/shadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/etc/shadow-
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+     owner: root, group: 101, permissions: 4754
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/var/lib/apt/lists/auxfiles
+     owner: 100, group: root, permissions: 0755
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/var/lib/apt/lists/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/var/log/lastlog
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/309e70b6974c72a062a2f537eee4041bb203f9a8cba42674e5ceed5b54446f5e/diff/etc/gshadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/309e70b6974c72a062a2f537eee4041bb203f9a8cba42674e5ceed5b54446f5e/diff/etc/gshadow-
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/309e70b6974c72a062a2f537eee4041bb203f9a8cba42674e5ceed5b54446f5e/diff/usr/bin/ssh-agent
+     owner: root, group: 102, permissions: 2755
+
+  /var/lib/docker/overlay2/309e70b6974c72a062a2f537eee4041bb203f9a8cba42674e5ceed5b54446f5e/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/309e70b6974c72a062a2f537eee4041bb203f9a8cba42674e5ceed5b54446f5e/diff/var/lib/apt/lists/auxfiles
+     owner: 100, group: root, permissions: 0755
+
+  /var/lib/docker/overlay2/309e70b6974c72a062a2f537eee4041bb203f9a8cba42674e5ceed5b54446f5e/diff/var/lib/apt/lists/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/etc/gshadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/etc/shadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/run/utmp
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/sbin/pam_extrausers_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/var/lib/apt/lists/auxfiles
+     owner: 100, group: root, permissions: 0755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/var/lib/apt/lists/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/var/log/btmp
+     owner: root, group: 43, permissions: 0660
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/var/log/lastlog
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/var/log/wtmp
+     owner: root, group: 43, permissions: 0664
+
+  /var/lib/docker/overlay2/54a6e523b53fc60939cc0c52cb42bb2cff5e144c5a53b9cfc928dddb8afe3002/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/bd7a41a3abb831f67253e75be2413216ccdb57d33f12e564ad1689a624544db5/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/9b2d36c0def4067cde31337c2fde569d8610d92134656b342bb218af79d60188/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/9b2d36c0def4067cde31337c2fde569d8610d92134656b342bb218af79d60188/diff/var/lib/apt/lists/auxfiles
+     owner: 100, group: root, permissions: 0755
+
+  /var/lib/docker/overlay2/ce681e09c71b19673835c1dd96bfc96f7924268e9884eb41df6e442c7ad86eb7/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/ce681e09c71b19673835c1dd96bfc96f7924268e9884eb41df6e442c7ad86eb7/diff/var/lib/apt/lists/auxfiles
+     owner: 100, group: root, permissions: 0755
+
+  /var/lib/docker/overlay2/ce681e09c71b19673835c1dd96bfc96f7924268e9884eb41df6e442c7ad86eb7/diff/var/lib/apt/lists/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/8270b48068f02876dfc4d20d295ee67f88f62bf164e4eb84cbde6f15566e8874/diff/etc/shadow
+     owner: root, group: 42, permissions: 0640
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/LICENSE
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/README.md
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/bin
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/bin/yarn
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/bin/yarn.cmd
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/bin/yarn.js
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/bin/yarnpkg
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/bin/yarnpkg.cmd
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/lib
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/lib/cli.js
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/lib/v8-compile-cache.js
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/a0570af96efd75783a5c2932ec3aabcba090dc68ec6852572fa124736cfbbef1/diff/opt/yarn/package.json
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/fc041e9f31c7199794044b98d473f4d8253bb288f00895edcb65fc0030a4bc99/diff/usr/bin/pdftohtml
+     owner: 1000, group: 1000, permissions: 0777
+
+  /var/lib/docker/overlay2/fc041e9f31c7199794044b98d473f4d8253bb288f00895edcb65fc0030a4bc99/diff/usr/lib/libpoppler.so.86
+     owner: 1000, group: 1000, permissions: 0777
+
+  /var/lib/docker/overlay2/fc041e9f31c7199794044b98d473f4d8253bb288f00895edcb65fc0030a4bc99/diff/var/cache/apt/archives/partial
+     owner: 100, group: root, permissions: 0700
+
+  /var/lib/docker/overlay2/fc041e9f31c7199794044b98d473f4d8253bb288f00895edcb65fc0030a4bc99/diff/var/lib/apt/lists/auxfiles
+     owner: 100, group: root, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/RNNBackend.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/__init__.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/__pycache__
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/__pycache__/RNNBackend.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/__pycache__/__init__.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/__pycache__/cells.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/__pycache__/models.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/cells.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/RNN/models.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/__init__.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/__pycache__
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/__pycache__/__init__.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__init__.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/__init__.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/__version__.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/_amp_state.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/_initialize.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/_process_optimizer.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/amp.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/compat.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/frontend.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/handle.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/opt.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/rnn_compat.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/scaler.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/utils.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__pycache__/wrap.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/__version__.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/_amp_state.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/_initialize.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/_process_optimizer.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/amp.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/compat.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/frontend.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/handle.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/__init__.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/__pycache__
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/__pycache__/__init__.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/__pycache__/functional_overrides.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/__pycache__/tensor_overrides.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/__pycache__/torch_overrides.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/functional_overrides.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/tensor_overrides.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/lists/torch_overrides.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/opt.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/rnn_compat.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/scaler.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/utils.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/amp/wrap.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils/__init__.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils/__pycache__
+     owner: 1000, group: 1000, permissions: 0755
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils/__pycache__/__init__.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils/__pycache__/fp16_optimizer.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils/__pycache__/fp16util.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils/__pycache__/loss_scaler.cpython-36.pyc
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils/fp16_optimizer.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b85d2dc66f278f025691b69c4300cc6/diff/usr/local/lib/python3.6/dist-packages/apex/fp16_utils/fp16util.py
+     owner: 1000, group: 1000, permissions: 0644
+
+  /var/lib/docker/overlay2/bfd9f55806546d879a0ffec4831c1af18b

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-rabbitmq
+  replicas: 1
+  serviceName: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: deployment-rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: 10.157.112.207:5001/rabbitmq:3.8-rc-management-alpine
+        imagePullPolicy: Always
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - >
+                if [ -z "$(grep rabbitmq /etc/resolv.conf)" ]; then
+                  sed "s/^search \([^ ]\+\)/search rabbitmq.\1 \1/" /etc/resolv.conf > /etc/resolv.conf.new;
+                  cat /etc/resolv.conf.new > /etc/resolv.conf;
+                  rm /etc/resolv.conf.new;
+                fi;
+                until rabbitmqctl node_health_check; do sleep 1; done;
+                if [ -z "$(rabbitmqctl cluster_status | grep rabbitmq-0)" ]; then
+                  touch /gotit
+                  rabbitmqctl stop_app;
+                  rabbitmqctl reset;
+                  rabbitmqctl join_cluster rabbit@rabbitmq-0;
+                  rabbitmqctl start_app;
+                else
+                  touch /notget
+                fi;
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name      
+        # - name: RABBITMQ_DEFAULT_PASS
+        #   valueFrom:
+        #     secretKeyRef:
+        #       key: rabbitmq-password
+        #       name: credential
+        # - name: RABBITMQ_DEFAULT_USER
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       key: rabbitmq-user
+        #       name: variables
+        #       optional: false
+        - name: RABBITMQ_ERLANG_COOKIE
+          valueFrom:
+            configMapKeyRef:
+              key: rabbitmq-erlang-cookie
+              name: variables
+              optional: false
+        - name: RABBITMQ_NODENAME
+          value: rabbit@$(MY_POD_NAME) 
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: gpu-001

@@ -1,0 +1,349 @@
+#1.一个基本的pod manifese:kubia-manual.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubia-manual
+spec:
+  containers:
+  - image: luksa/kubia
+    name: kubia
+    ports:
+    - containerPort: 8080
+      protocal: TCP
+
+
+#2.带标签的Pod:kubia-manual-with-labels.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubia-manual
+  labels:
+    creation_method: manual
+    env: prod
+spec:
+  containers:
+  - image: luksa/kubia
+    name: kubia
+    ports:
+    - containerPort: 8080
+      protocal: TCP
+
+#3.使用标签选择器将Pod调度到特定节点
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-gpu
+spec:
+  containers:
+  - name: myapp
+    image: nginx:latest
+  nodeSelector:
+    gpu: "true"
+
+#4.创建一个名称空间
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: custom-namespace
+
+#5.创建基于HTTP的存活探针
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-liveness
+spec:
+  containers:
+  - name: myapp
+    image: myapp:latest
+    livenessProbe:
+      httpGet:
+        path: / 
+        port: 8080
+该Pod文件定义了一个httpGet存货探针，让k8s定义在端口8080路径上执行HTTP GET请求，以确定该容器是否健康
+
+#6定义一个ReplicationController控制器
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: myapp
+spec:
+  replicas: 3
+  selector:
+    app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: myapp:latest
+          ports:
+            - containerPort: 8080
+
+#7.定义ReplicaSet
+apiVersion: apps/v1
+kind: ReplicaSet 
+metadata:
+  name: test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: devops
+  template:
+    metadata:
+      labels:
+        app: devops
+    spec:
+      containers:
+      - name: test
+        image: nginx:latest
+
+#8.定义一个DaemonSet控制器
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ssd-monitor
+spec:
+  selector:
+    matchLabels:
+      app: ssd-monitor
+  template:
+    metadata:
+      labels:
+        app: ssd-monitor
+      spec:
+        nodeSelector:
+          disk: ssd
+        containers:
+        - name: main 
+          image: luksa/ssd-monitor
+
+
+#9.定义一个Job资源
+apiVersion: batch/v1
+kind: Job 
+metadata:
+  name: batch-job
+spec:
+  template:
+    metadata:
+      labels:
+        app: batch-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: main
+        image: luksa/batch-job
+
+#10.需要一个Job运行多次
+顺序运行Job pod 
+apiVersion: batch/v1 
+kind: Job 
+metadata: 
+  name: multi-completion-batch-job
+spec:
+  completions: 5
+  template:
+    metadata:
+      labels:
+        app: batch-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: main
+        image: luksa/batch-job
+Job将一个接一个的运行五个Pod,它最初创建一个Pod,当Pod的容器运行完成时，它会创建第二个Pod,以此类推，直到5个Pod成功完成。
+
+
+并行运行Job pod 
+apiVersion: batch/v1 
+kind: Job 
+metadata: 
+  name: multi-completion-batch-job
+spec:
+  completions: 5
+  parallelism: 2
+  template:
+  ......
+
+#11.创建一个CronJob  每15分钟运行一次示例中的批处理任务
+apiVersion: batch/v1beta1
+kind: CronJob 
+metadata:
+  name: betch-job-every-fifteen-minutes
+spec:
+  schedule: "0,15,30,45 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: periodic-batch-job
+        spec:
+          restartPolicy: OnFailure
+          containers: luksa/batch-job
+          - name: main 
+            image: luska/batch-job 
+
+#12.定义一个service
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: kubia 
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: kubia 
+
+如果希望特定客户端产生的所有请求每次都指向同一个Pod，可以设置服务的sessionAffinity属性为ClientIP
+apiVersion: v1 
+kind: Service 
+spec:
+  sessionAffinity: ClientIP 
+
+在服务定义中指定多端口
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: kubia 
+spec: 
+  ports:
+  - name: http 
+    port: 80
+    targetPort: 8080
+  - name: https
+    port: 443 
+    targetPort: 8443
+  selector:
+    app: kubia 
+
+#13.手动配置服务的endpoint
+定义不含pod选择器的服务
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: external-service
+spec:
+  ports:
+  - port: 80
+为没有选择器的服务创建Endpoint资源
+apiVersion: v1 
+kind: Endpoints
+metadata:
+  name: external-service
+subsets:
+  - addressess:
+    - ip: 11.11.11.11
+    - ip: 22.22.22.22
+    ports:
+    - port: 80
+
+#14.创建ExternalName类型的服务
+apiVersion: v1 
+kind: Service
+metadata:
+  name: external-service
+spec:
+  type: ExternalName 
+  externalName: someapi.somecompany.com
+  ports:
+  - port: 80 
+
+#15.将服务暴漏给外部的客户端
+使用NodePort类型的服务
+创建NodePort类型的服务
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: kube-nodeport 
+spec:
+  type: NodePort 
+  ports:
+  - port: 80
+    targetPort: 8080
+    nodePort: 30123
+  selector:
+    app : kubia 
+
+通过负载均衡器将服务爆露出来
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: kubia-loadbalancer
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: kubia 
+
+通过Ingress暴漏服务
+Ingress控制器是必不可少的，只有Ingress控制器在集群中那个运行，Ingress资源才能正常工作
+创建Ingress资源
+apiVersion: extensions/v1beta1
+kind: Ingress 
+metadata: 
+  name: kubia 
+spec: 
+  rules:
+  - host: kubia.example.com 
+    http:
+      paths:
+      - path: / 
+        backend: 
+          serviceName: kubia-nodeport
+          servicePort: 80
+
+通过相同的Ingress暴漏多个服务
+将不同的服务映射到相同主机的不同路径
+- host: kubia.example.com
+  http:
+    paths:
+    - paths: /kubia 
+      backend:
+        serviceName: kubia
+        servicePort: 80
+    - path: /foo
+      backend:
+        serviceName: bar 
+        servicePort: 80
+
+将不同的服务映射到不同的主机上
+spec:
+  rules:
+  - host: foo.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: foo
+          servicePort: 80
+  - host: bar.example.com 
+    http:
+      paths:
+      - path: /
+        backend: 
+          serviceName: bar 
+          servicePort: 80
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

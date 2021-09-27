@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ name }}
+  namespace: {{ namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ selectorLabel }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ selectorLabel }}
+{%- if (annotations is defined) and (annotations | length > 0) %}
+      annotations:
+  {%- for one_annotation in annotations %}
+        {{one_annotation[0]}}: {{one_annotation[1]}}
+  {%- endfor %}
+{%- endif %}
+    spec:
+      containers:
+      - name: {{ containerName }}
+        image: {{ image }}
+        imagePullPolicy: Always
+{%- if needPrivilegedPermission == true %}
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities: {}
+          privileged: true
+          procMount: Default
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+{%- endif %}
+{%- if livenessProbe == 'information_extraction_livenessProbe' %}
+        livenessProbe:
+          exec:
+            command:
+            - env
+            - "PYTHONPATH=/app"
+            - python3.8
+            - /app/package/healthcheck/general.py
+          initialDelaySeconds: 60
+          periodSeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 2
+{%- endif %}
+{%- if (envs is defined) and (envs | length > 0) %}
+        env:
+  {%- for one_env in envs %}
+        - name: {{one_env[0]}}
+          value: {{one_env[1]}}
+  {%- endfor %}
+{%- endif %}
+{%- if (volumes is defined) and (volumes | length > 0) %}
+        volumeMounts:
+  {%- for one_volume in volumes %}
+        - mountPath: {{one_volume.mountPath}}
+          name: {{one_volume.name}}
+  {%- endfor %}
+{%- endif %}
+{%- if (volumes is defined) and (volumes | length > 0) %}
+      volumes:
+  {%- for one_volume in volumes %}
+      - name: {{one_volume.name}}
+        persistentVolumeClaim:
+          claimName: {{one_volume.claimName}}
+  {%- endfor %}
+{%- endif %}
+{%- if (imagePullSecrets is defined) and (imagePullSecrets | length > 0) %}
+      imagePullSecrets:
+  {%- for one_secret in imagePullSecrets %}
+      - name: {{ one_secret }}
+  {%- endfor %}
+{%- endif %}
+      nodeSelector:
+        node-tag: {{nodeTag}}

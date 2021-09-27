@@ -1,0 +1,618 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "changningquzhengfu",
+    "project": "changningproject",
+    "env": "production",
+    "description": "这是为长宁区政府项目创建的生产环境部署的配置文件，对应生产环境机器IP: 10.206.240.142",
+    "mode": "docker",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "../project-changning/data_root",
+    "imageOutputRootDir": "../project-changning/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "identity",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "pg",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "5432:5432"
+        ],
+        "envs": [
+          "POSTGRES_PASSWORD=\"Kt4C4TCHJ3\""
+        ],
+        "volumes": [
+          "/postgres:/var/lib/postgresql/data"
+        ],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "redis",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "redis:5.0.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "expert_redis",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "6379:6379"
+        ],
+        "envs": [
+          "REDIS_PASSWORD=\"bzpXOAb5GkBO\""
+        ],
+        "volumes": [],
+        "command": "redis-server --requirepass \"bzpXOAb5GkBO\" --appendonly \"yes\""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "token_mt",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/token_mt:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "token_mt",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "5100:5100"
+        ],
+        "envs": [
+          "SECRET_KEY=\"jd98u3oijmrf9u02p3kemf9q7uyrhfgnm4tuer9vcjkm34ijo\"",
+          "SECRET_EXPIRED_DAYS=\"7\"",
+          "SECRET_STATIC=\"true\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity_api",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_api:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "identity_api",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "5200:5200"
+        ],
+        "envs": [
+          "POSTGRES=\"postgres:Kt4C4TCHJ3@10.206.240.142:5432\"",
+          "POSTGRES_IDENTITY=\"identity-management\"",
+          "SERVICE_SECRET=\"http://10.206.240.142:5100/secret\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "homepage-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/homepage_ui:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "homepage_ui",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "38082:8082"
+        ],
+        "envs": [
+          "VUE_APP_HOMEPAGE_ROOT_URL=\"//10.206.240.142:38082\"",
+          "VUE_APP_ACCOUNT_ROOT_URL=\"//10.206.240.142:39100\"",
+          "VUE_APP_NENG_ROOT_URL=\"//10.206.240.142:38085\"",
+          "VUE_APP_IDENTITY_HOST=\"//10.206.240.142:5200/v1\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity_ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_ui:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "identity_ui",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "39100:9100"
+        ],
+        "envs": [
+          "VUE_APP_HOMEPAGE_ROOT_URL=\"//10.206.240.142:38082\"",
+          "VUE_APP_IDENTITY_HOST=\"//10.206.240.142:5200/v1\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "approval_ui",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/approval_ui:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "approval_ui",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "38100:8100"
+        ],
+        "envs": [
+          "NODE_ENV=\"production\"",
+          "VUE_APP_TENANT=\"minerva\"",
+          "VUE_APP_SERVICE_NAME=\"approval\"",
+          "VUE_APP_PREVIEW=\"false\"",
+          "VUE_APP_APP_NAME=\"智能审批\"",
+          "VUE_APP_FOOTER_TEXT=\"©2020苏州美能华智能科技有限公司\"",
+          "VUE_APP_COOKIE_DOMAIN_NAME=\"\"",
+          "VUE_APP_HOMEPAGE_ROOT_URL=\"//10.206.240.142:38082\"",
+          "VUE_APP_METIS_ROOT_URL=\"//10.206.240.142:38200\"",
+          "VUE_APP_IDENTITY_HOST=\"//10.206.240.142:5200\"",
+          "VUE_APP_APPROVAL_HOST=\"//10.206.240.142:37044\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "approval_api",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/approval_api:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "approval_api",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "37044:7044"
+        ],
+        "envs": [
+          "PG_APPROVAL_HOST=10.206.240.142",
+          "PG_APPROVAL_PORT=5432",
+          "PG_APPROVAL_DATABASE=\"approval\"",
+          "PG_APPROVAL_USERNAME=\"postgres\"",
+          "PG_APPROVAL_PASSWORD=\"Kt4C4TCHJ3\"",
+          "SERVICE_SECRET=\"http://10.206.240.142:5100/secret\"",
+          "SERVICE_METIS=\"http://10.206.240.142:7045/v1\"",
+          "MOCK_TENANT_ID=\"2\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "expert_ui",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/expert_ui:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "expert_ui",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "38085:8082"
+        ],
+        "envs": [
+          "VUE_APP_TENANT=\"minerva\"",
+          "VUE_APP_NAME=\"能手\"",
+          "VUE_APP_FOOTER_TEXT=\"©2019 苏州美能华智能科技有限公司\"",
+          "VUE_APP_COOKIE_DOMAIN_NAME=\"\"",
+          "VUE_APP_HOMEPAGE_ROOT_URL=\"//10.206.240.142:38082\"",
+          "VUE_APP_METIS=\"//10.206.240.142:38200\"",
+          "VUE_APP_IDENTITY_HOST=\"//10.206.240.142:5200/v1\"",
+          "VUE_APP_EXPERT_HOST=\"//10.206.240.142:37001/v1\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "expert_api",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/expert_api:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "expert_api",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "37001:7001"
+        ],
+        "envs": [
+          "POSTGRES=\"postgres:Kt4C4TCHJ3@10.206.240.142:5432\"",
+          "POSTGRES_DATABASE=\"expert\"",
+          "SERVICE_SECRET=\"http://10.206.240.142:5100/secret\"",
+          "SERVICE_METIS=\"http://10.206.240.142:7045/v1\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_ui",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_ui:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_ui",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "38200:8200"
+        ],
+        "envs": [
+          "NODE_ENV=\"production\"",
+          "VUE_APP_TENANT=\"minerva\"",
+          "VUE_APP_NAME=\"Metis\"",
+          "VUE_APP_COOKIE_DOMAIN_NAME=\"\"",
+          "VUE_APP_HOMEPAGE_ROOT_URL=\"//10.206.240.142:38082\"",
+          "VUE_APP_METIS_HOST=\"//10.206.240.142:37046/v1\"",
+          "VUE_APP_IDENTITY_HOST=\"//10.206.240.142:5200/v1\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_api",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_api:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_api",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [
+          "37046:7046"
+        ],
+        "envs": [
+          "SERVICE_METIS=\"http://10.206.240.142:7045/v1\"",
+          "SERVICE_SECRET=\"http://10.206.240.142:5100/secret\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_mt",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_mt:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_mt",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [
+          "7045:7045"
+        ],
+        "envs": [
+          "POSTGRES_DATABASE=\"metis\"",
+          "POSTGRES=\"postgres:Kt4C4TCHJ3@10.206.240.142:5432\"",
+          "DEPOT=/app/data",
+          "REDIS=user:bzpXOAb5GkBO@10.206.240.142:6379",
+          "REDIS_DB=0"
+        ],
+        "volumes": [
+          "/intelligence/expert/data:/app/data"
+        ],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_worker_gpu0",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_worker_gpu0",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [],
+        "envs": [
+          "DATA_ROOT=\"/app/data\"",
+          "RESOURCE_ROOT=\"/app/resource\"",
+          "CONFIGS_ROOT=\"/app/configs\"",
+          "LOG_ROOT=\"/app/log\"",
+          "MODULE_REPOSITORY=\"/app/modules\"",
+          "REDIS_URL=\"redis://:bzpXOAb5GkBO@10.206.240.142:6379\"",
+          "MT_GPU=\"0\"",
+          "WORKER_ID=\"worker:3\""
+        ],
+        "volumes": [
+          "/intelligence/expert/data:/app/data",
+          "/intelligence/expert/wheels:/app/wheel",
+          "/intelligence/expert/resource:/app/resource",
+          "/intelligence/expert/modules:/app/modules",
+          "/intelligence/expert/configs:/app/configs",
+          "/intelligence/expert/log:/app/log"
+        ],
+        "command": "",
+        "dockerRunOptions": []
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_worker_gpu1",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_worker_gpu1",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [],
+        "envs": [
+          "DATA_ROOT=\"/app/data\"",
+          "RESOURCE_ROOT=\"/app/resource\"",
+          "CONFIGS_ROOT=\"/app/configs\"",
+          "LOG_ROOT=\"/app/log\"",
+          "MODULE_REPOSITORY=\"/app/modules\"",
+          "REDIS_URL=\"redis://:bzpXOAb5GkBO@10.206.240.142:6379\"",
+          "MT_GPU=\"1\"",
+          "WORKER_ID=\"worker:3\""
+        ],
+        "volumes": [
+          "/intelligence/expert/data:/app/data",
+          "/intelligence/expert/wheels:/app/wheel",
+          "/intelligence/expert/resource:/app/resource",
+          "/intelligence/expert/modules:/app/modules",
+          "/intelligence/expert/configs:/app/configs",
+          "/intelligence/expert/log:/app/log"
+        ],
+        "command": "",
+        "dockerRunOptions": []
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_worker_gpu2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_worker_gpu2",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [],
+        "envs": [
+          "DATA_ROOT=\"/app/data\"",
+          "RESOURCE_ROOT=\"/app/resource\"",
+          "CONFIGS_ROOT=\"/app/configs\"",
+          "LOG_ROOT=\"/app/log\"",
+          "MODULE_REPOSITORY=\"/app/modules\"",
+          "REDIS_URL=\"redis://:bzpXOAb5GkBO@10.206.240.142:6379\"",
+          "MT_GPU=\"2\"",
+          "WORKER_ID=\"worker:3\""
+        ],
+        "volumes": [
+          "/intelligence/expert/data:/app/data",
+          "/intelligence/expert/wheels:/app/wheel",
+          "/intelligence/expert/resource:/app/resource",
+          "/intelligence/expert/modules:/app/modules",
+          "/intelligence/expert/configs:/app/configs",
+          "/intelligence/expert/log:/app/log"
+        ],
+        "command": "",
+        "dockerRunOptions": []
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_worker_gpu3",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_worker_gpu3",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [],
+        "envs": [
+          "DATA_ROOT=\"/app/data\"",
+          "RESOURCE_ROOT=\"/app/resource\"",
+          "CONFIGS_ROOT=\"/app/configs\"",
+          "LOG_ROOT=\"/app/log\"",
+          "MODULE_REPOSITORY=\"/app/modules\"",
+          "REDIS_URL=\"redis://:bzpXOAb5GkBO@10.206.240.142:6379\"",
+          "MT_GPU=\"3\"",
+          "WORKER_ID=\"worker:3\""
+        ],
+        "volumes": [
+          "/intelligence/expert/data:/app/data",
+          "/intelligence/expert/wheels:/app/wheel",
+          "/intelligence/expert/resource:/app/resource",
+          "/intelligence/expert/modules:/app/modules",
+          "/intelligence/expert/configs:/app/configs",
+          "/intelligence/expert/log:/app/log"
+        ],
+        "command": "",
+        "dockerRunOptions": []
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_worker_cpu0",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_worker_cpu0",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [],
+        "envs": [
+          "DATA_ROOT=\"/app/data\"",
+          "RESOURCE_ROOT=\"/app/resource\"",
+          "CONFIGS_ROOT=\"/app/configs\"",
+          "LOG_ROOT=\"/app/log\"",
+          "MODULE_REPOSITORY=\"/app/modules\"",
+          "REDIS_URL=\"redis://:bzpXOAb5GkBO@10.206.240.142:6379\"",
+          "MT_GPU=\"0\"",
+          "WORKER_ID=\"worker:4\""
+        ],
+        "volumes": [
+          "/intelligence/expert/data:/app/data",
+          "/intelligence/expert/wheels:/app/wheel",
+          "/intelligence/expert/resource:/app/resource",
+          "/intelligence/expert/modules:/app/modules",
+          "/intelligence/expert/configs:/app/configs",
+          "/intelligence/expert/log:/app/log"
+        ],
+        "command": "",
+        "dockerRunOptions": []
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "identity-db-initalizer",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_db:latest",
+      "useHostNetwork": false,
+      "envs": [
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_HOST=10.206.240.142",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PORT=5432",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_DATABASE=identity-management",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_USERNAME=postgres",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PASSWORD=\"Kt4C4TCHJ3\"",
+        "DB_EXECUTION_CONTEXT=demo"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "expert-db-initalizer",
+      "imageCategory": "expert",
+      "srcImage": "expert/expert_db:latest",
+      "useHostNetwork": false,
+      "envs": [
+        "POSTGRES=postgres:Kt4C4TCHJ3@10.206.240.142:5432"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "approval-db-initalizer",
+      "imageCategory": "approval",
+      "srcImage": "expert/approval_db:latest",
+      "envs": [
+        "PG_APPROVAL_HOST=10.206.240.142",
+        "PG_APPROVAL_PORT=5432",
+        "PG_APPROVAL_DATABASE=approval",
+        "PG_APPROVAL_USERNAME=postgres",
+        "PG_APPROVAL_PASSWORD=Kt4C4TCHJ3",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "metis-db-initalizer",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_db:latest",
+      "envs": [
+        "POSTGRES=postgres:Kt4C4TCHJ3@10.206.240.142:5432"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/"
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "identity-management",
+        "server": "10.206.240.142",
+        "port": "5432",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/identity",
+        "useHostNetwork": true
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "approval",
+        "server": "10.206.240.142",
+        "port": "5432",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/approval",
+        "useHostNetwork": true
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "expert",
+        "server": "10.206.240.142",
+        "port": "5432",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/expert",
+        "useHostNetwork": true
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "metis",
+        "server": "10.206.240.142",
+        "port": "5432",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/metis",
+        "useHostNetwork": true
+      }
+    ]
+  }
+}

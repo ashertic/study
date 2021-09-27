@@ -1,0 +1,186 @@
+1.查看特定名称空间下拥有特定标签的Pod
+kubectl get pods -l component=kube-apiserver -n kube-system
+2.service端口暴漏问题
+kubectl expose deployment nginx-deploy --name=nginx  --port=80 --target-port=80 --protocol=TCP
+--port表示service的端口，--target-port表示目标容器的端口，在创建service的时候如果不指定target-port则表示把目标端口与--port一样的端口映射到--port上，指定了--target-port则表示把指定后的
+目标端口映射到指定的源端口
+3.查看组件状态信息
+kubectl get cs
+4.创建了service之后，在node节点可以直接使用service的名称进行访问请求
+进入到Pod内部可以使用wget命令直接请求service的名称从而进行请求发现
+wget -O - -q test:8088
+
+5.如果在Pod的yaml文件中定义了nodeSelector:参数，则此Pod在创建的时候会自动被调用到含有此标签的节点上，但是此Pod不会被打上nodeSelector定义的标签。
+
+6.配置kubectl edit使用不同的文本编辑器
+可以通过设置：KUBE_EDITOR环境变量来告诉kubectl使用你期望的文本编辑器。例如，如果你想使用nano便器kubernetes资源，请执行
+编辑~/.bashrc或等效文件中
+export KUBE_EDITOR="/usr/bin/nona"
+
+7.在pod中可以查看自己属于的service的信息，如果service是在Pod之后创建，那么关于这个服务的环境变量
+是没有设置的，需要重启启动一下pod
+KUBIA_SERVICE_HOST=
+KUBIA_SERVICE_PORT=
+
+8.使用FQDN来代替IP去访问，应用服务，必须要在一个存在的Pod上才可以。
+test.default.svc.cluster.local
+其中test对应于服务名称，default表示服务在其中定义的名称空间，而svc.cluster.local是所在集群
+本地服务名称中使用的可配置集群域后缀名。
+在kubernetes的网络中，Service是ping不通的，因为k8s只是为service生成了一个虚拟IP地址，可以使用nslookup,curl,telnet
+
+9.k8s ingress高级配置
+在annotations字段添加以下选项
+ nginx.ingress.kubernetes.io/proxy-body-size:"50m"
+其它参数设置可以参照下面地址配置信息
+ https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md#server-side-https-enforcement-through-redirect
+
+
+ 10.修改NodePort默认端口范围
+在使用kubeadm安装k8s集群的情况下，NodePort默认范围是30000-32767，某些情况下因为公司的网络策略，需要修改NodePort的端口范围。
+就方法如下：
+修改kube-apiserver.yaml
+使用kubeadm安装k8s集群的情况下，Master节点上会有一个文件/etc/kubernetes/manifests/kube-apiserver.yaml,
+修改此文件，向其中添加--service-node-port-range=1-65535(使用自己的端口范围)，
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - --advertise-address=x.x.x.x
+    - --allow-privilegd=true
+    - --service-node-port-range=20000-22767
+
+重启apiserver
+kubectl get pod {podname} -n {namespace} -o yaml | kubectl replace --force -f -
+验证结果
+执行以下命令，验证修改是否生效
+kubectl describe pod $apiserver_pods -n kube-system
+
+如果集群中有多个Master节点，需要逐个修改每个节点上的/etc/kubernetes/manifests/kube-apiserver.yaml文件，并重启apiserver
+
+11.kubernetes session保持等设置
+sessionAffinity: ClientIP
+sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+
+12.优化nginx-ingress-controller并发性能
+nginx-ingress-controller的原理实际上是扫描Kubernetes集群中的Ingress资源，根据Ingress资源的定义自动为每个域名生成一段nginx虚拟主机及反向代理的配置，最后由nginx读取这些配置，完成实际的HTTP请求流量的处理，整个HTTP请求链路如下：
+ client    ->    nginx    ->    upstream(kubernetes service)    ->    pods  
+
+可以编辑ingress-controller的configmap对其进行参数优化,或者再yaml文件中直接对其修改,添加如下参数配置可以修改keep-alive的默认值
+kubectl  edit configmap nginx-configuration -n ingress-nginx
+...
+apiVersion: v1
+data:
+  keep-alive: "75"
+  keep-alive-requests: "100"
+  upstream-keepalive-connections: "10000"
+  upstream-keepalive-requests: "100"
+  upstream-keepalive-timeout: "60"
+kind: ConfigMap
+
+
+13.TokenController作为controller-manager的一部分运行
+-观察serviceAccount的创建，并创建一个相应的Secret 来允许API访问。
+-观察serviceAccount的删除，并删除所有相应的ServiceAccountToken Secret
+-观察secret 添加，并确保关联的ServiceAccount存在，并在需要时向secret 中添加一个Token。
+-观察secret 删除，并在需要时对应 ServiceAccount 的关联
+serviceAccount用来访问kubernetes API,通过API创建和管理,每个account只能在一个namespace上生效,存储在kubernetes API中的secret资源。kubernetes会默认创建,并且会自动挂载在Pod中的/run/secrets、kubernetes.io/serviceaccount目录下
+Service account是为了方便Pod里面的进程调用Kubernetes API或其他外部服务而设计的。它与User account不同:
+    1.User account是为人设计的，而service account则是为Pod中的进程调用Kubernetes API而设计；
+　　2.User account是跨namespace的，而service account则是仅局限它所在的namespace；
+　　3.每个namespace都会自动创建一个default service account
+　　4.Token controller检测service account的创建，并为它们创建secret
+　　5.开启ServiceAccount Admission Controller后
+		   1.每个Pod在创建后都会自动设置spec.serviceAccount为default（除非指定了其他ServiceAccout）
+		   2.验证Pod引用的service account已经存在，否则拒绝创建
+		   3.如果Pod没有指定ImagePullSecrets，则把service account的ImagePullSecrets加到Pod中
+		   4.每个container启动后都会挂载该service account的token和ca.crt到/var/run/secrets/kubernetes.io/serviceaccount/　　
+ 
+
+14.默认的service account 仅仅只能获取当前Pod自身的相关属性，无法观察到其他名称空间Pod的相关属性信息。
+如果想要扩展Pod，假设有一个Pod需要用于管理其他Pod或者是其他资源对象，是无法通过自身的名称空间的serviceaccount进行获取其他Pod的相关属性信息的，此时就需要进行手动创建一个serviceaccount，并在创建Pod时进行定义。
+创建serviceaccount
+kubectl create serviceaccount admin 
+
+此时会自动创建一个secret,现在只需要在 pod 的spec.serviceAccountName 字段中将name设置为您想要用的 service account 名字即可。在 pod 创建之初 service account 就必须已经存在，否则创建将被拒绝。
+需要注意的是不能更新已创建的 pod 的 service account。
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sa-demo
+  labels:
+    app: myapp
+    release: canary
+spec:
+  containers:
+  - name: myapp
+    image: ikubernetes/myapp:v2
+    ports:
+    - name: httpd
+      containerPort: 80
+  serviceAccountName: admin  #此处指令为指定sa的名称
+
+集群配置文件说明:
+kubectl config view
+apiVersion: v1
+clusters:   #集群列表 
+- cluster:
+    certificate-authority-data: REDACTED  #认证集群的方式
+    server: https://172.16.150.212:6443    #访问服务的APIserver的路径
+  name: kubernetes #集群的名称
+contexts: #上下文列表
+- context:
+    cluster: kubernetes  #访问kubernetes这个集群
+    user: kubernetes-admin  #使用 kubernetes-admin账号
+  name: kubernetes-admin@kubernetes #给定一个名称
+current-context: kubernetes-admin@kubernetes #当前上下文，表示使用哪个账号访问哪个集群
+kind: Config
+preferences: {}
+users:  #用户列表
+- name: kubernetes-admin #用户名称
+  user:
+    client-certificate-data: REDACTED #客户端证书，用于与apiserver进行认证
+    client-key-data: REDACTED #客户端私钥
+
+kubectl describe svc kubernetes
+Endpoints:         172.16.150.212:6443  #可以看到此处svc后端的Endpoint是当前节点的IP地址，通过svc的IP地址进行映射，以确保cluster中的pod可以通过该sa与集群内api进行通讯，仅仅是身份认证
+
+创建一个cluster用户及context
+使用当前系统的ca证书认证一个私有证书
+cd /etc/kubernetes/pki/
+(umask 077;openssl genrsa -out qiangungun.key 2048)
+openssl req -new -key meng.key -out meng.csr -subj "/CN=meng"
+openssl x509 -req -in meng.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out meng.crt -days 3650
+
+查看证书内容
+openssl x509 -in meng.crt -text -noout
+
+创建一个当前集群用户
+kubectl config set-credentials meng --client-certificate=./meng.crt --client-key=./meng.key --embed-certs=true
+为用户创建一个context
+kubectl config set-context  meng@kubernetes --cluster=kubernetes --user=meng
+kubectl config view
+切换serviceaccount
+kubectl config use-context meng@kubernetes 
+自动定义一个cluster
+kubectl config set-cluster    mycluster --kubeconfig=/tmp/test.conf --server="https://172.16.150.212:6443" --certificate-authority=/etc/kubernetes/pki/ca.crt --embed-certs=true
+
+
+RBAC设置基于角色的访问控制
+使用kubectl create进行创建角色,指定角色名称,–verb指定权限，–resource指定资源或者资源组
+kubectl create role pods-reader --verb=get,list,watch --resource=pods --dry-run -o yaml > role-demo.yaml
+kubectl apply -f role-demo.yaml
+
+使用kubectl create进行创建角色绑定，指定角色绑定的名称，–role|–clusterrole指定绑定哪个角色，–user指定哪个用户
+kubectl create rolebinding magedu-read-pods --role=pods-reader --user=meng --dry-run -o yaml > rolebinding-demo.yaml
+
+ClusterRole对象可以授予与Role对象相同的权限，但由于它们属于集群范围对象， 也可以使用它们授予对以下几种资源的访问权限:
+kubectl config use-context kubernetes-admin@kubernetes  #切换到kubernetes-admin用户
+kubectl create clusterrole cluster-read --verb=get,list,watch --resource=pods -o yaml > clusterrole-demo.yaml
+kubectl create clusterrolebinding magedu-read-all-pods --clusterrole=cluster-read --user=meng --dry-run -o yaml > clusterrolebinding-demo.yaml
+kubectl apply -f clusterrolebinding-demo.yaml
+
+将meng通过rolebinding到集群角色magedu-read-pods当中
+kubectl create clusterrolebinding magedu-read-pods --clusterrole=cluster-read --user=meng --dry-run -o yaml > clusterrolebinding-clusterrole-demo.yaml
+kubectl apply -f clusterrolebinding-clusterrole-demo.yaml

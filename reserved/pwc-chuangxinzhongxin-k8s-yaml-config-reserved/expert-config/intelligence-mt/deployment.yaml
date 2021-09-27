@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intelligence-mt
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-intelligence-mt
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-intelligence-mt
+    spec:
+      containers:
+        - name: intelligence-mt
+          image: 10.157.112.207:5001/expert/intelligence_mt:latest
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities: {}
+            privileged: true
+            procMount: Default
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          env:
+            - name: QUEUE_SIZE
+              value: "4"
+            - name: RESTFUL_HOST
+              value: 0.0.0.0
+            - name: RESTFUL_PORT
+              value: "3000"
+            - name: DATA_ROOT
+              value: /app/data
+            - name: REDIS_URL
+              value: redis://:jmCloGirhZmm@cluster-ip-redis.expert.svc.cluster.local:6379
+            - name: TASK_TIMEOUT
+              value: "20m"
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/data
+              name: intelligence-data
+            - mountPath: /app/wheel
+              name: intelligence-wheel
+      volumes:
+        - name: intelligence-data
+          persistentVolumeClaim:
+            claimName: intelligence-mt-data
+        - name: intelligence-wheel
+          persistentVolumeClaim:
+            claimName: intelligence-mt-wheel
+      imagePullSecrets:
+        - name: meinenghua
+      nodeSelector:
+        node-tag: gpu-001

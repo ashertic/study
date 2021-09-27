@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intelligence-worker
+  namespace: expert
+spec:
+  selector:
+    matchLabels:
+      app: deployment-intelligence-worker
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-intelligence-worker
+    spec:
+      containers:
+      - name: intelligence-worker
+        image: IMAGE_BASEURL_PLACEHOLDER/expert/intelligence_worker:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: QUEUE_SIZE
+          value: "4"
+        - name: DATA_ROOT
+          value: /app/data
+        - name: MODEL_REPOSITORY_ROOT
+          value: /app/models
+        - name: RESOURCE_ROOT
+          value: /app/resource
+        - name: CONFIGS_ROOT
+          value: /app/configs
+        - name: MODEL_REPOSITORY
+          value: /app/model_repository
+        - name: MT_GPU
+          value: "0"
+        - name: REDIS_URL
+          value: redis://:jmCloGirhZmm@cluster-ip-redis.expert.svc.cluster.local:6379
+        - name: REDIS_WORKER
+          value: "1"
+        - name: MODELS
+          value: "INTELLIGENCE_WORKER_MODELS_PLACEHOLDER"
+        resources: {}
+          # limits:
+          #   nvidia.com/gpu: "1"
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities: {}
+          privileged: true
+          procMount: Default
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        volumeMounts:
+        - mountPath: /app/data
+          name: intelligence-data
+        - mountPath: /app/resource
+          name: intelligence-resource
+        - mountPath: /app/models
+          name: intelligence-models
+        - mountPath: /app/configs
+          name: intelligence-configs
+        - mountPath: /app/wheel
+          name: intelligence-wheel
+        - mountPath: /app/model_repository
+          name: intelligence-model-repository
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector:
+        node-tag: EXPERT_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: intelligence-data
+        persistentVolumeClaim:
+          claimName: intelligence-mt-data
+      - name: intelligence-resource
+        persistentVolumeClaim:
+          claimName: intelligence-mt-resource
+      - name: intelligence-models
+        persistentVolumeClaim:
+          claimName: intelligence-mt-models
+      - name: intelligence-configs
+        persistentVolumeClaim:
+          claimName: intelligence-mt-configs
+      - name: intelligence-wheel
+        persistentVolumeClaim:
+          claimName: intelligence-mt-wheel
+      - name: intelligence-model-repository
+        persistentVolumeClaim:
+          claimName: intelligence-mt-model-repository

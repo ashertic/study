@@ -1,0 +1,1994 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "demo",
+    "project": "demo",
+    "env": "development",
+    "description": "这是个正式环境的配置文件",
+    "mode": "k8s",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "../project-gaoqishenpi/data_root/",
+    "imageOutputRootDir": "../project-gaoqishenpi/images"
+  },
+  "services": [
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-elasticsearch",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "elasticsearch:7.5.0",
+      "deployImage": "elasticsearch:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "elasticsearch",
+            "capacityStorage": "200Gi",
+            "hostPath": "logging/elasticsearch"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "fluent-bit",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "fluent-bit:1.4",
+      "deployImage": "fluent-bit:1.4",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-kibana",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "kibana:7.5.0",
+      "deployImage": "kibana:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "identity",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30001,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "Kt4C4TCHJ3"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "identity/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "homepage-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/homepage_ui:kunshan",
+      "deployImage": "identity/homepage_ui:kunshan",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31001,
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "//58.210.186.121:31002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "minerva"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT_NAME",
+              "value": "美能华"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//58.210.186.121:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//58.210.186.121:31004/v1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_ui:latest",
+      "deployImage": "identity/identity_ui:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31002,
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//58.210.186.121:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//58.210.186.121:31004/v1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity-api",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_api:latest",
+      "deployImage": "identity/identity_api:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5200,
+            "targetPort": 5200
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31004,
+            "port": 5200,
+            "targetPort": 5200
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_IDENTITY",
+              "value": "identity-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES",
+              "value": "postgres:Kt4C4TCHJ3@cluster-ip-postgres.identity.svc.cluster.local:5432"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "token-mt",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/token_mt:latest",
+      "deployImage": "identity/token_mt:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5100,
+            "targetPort": 5100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_EXPIRED_DAYS",
+              "value": "\"7\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_KEY",
+              "value": "jd98u3oijmrf9u02p3kemf9q7uyrhfgnm4tuer9vcjkm34ijo"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_STATIC",
+              "value": "\"true\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "pdfjs",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/pdfjs:2.5.207",
+      "deployImage": "kunshan/identity/pdfjs:2.5.207",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8088,
+            "targetPort": 8088
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": []
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30003,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "Kt4C4TCHJ3"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "expert/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "RedisService",
+      "name": "redis",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "redis:5.0.5-alpine",
+      "deployImage": "redis:5.0.5-alpine",
+      "k8s": {
+        "__type__": "RedisServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "redisPassword": "bzpXOAb5GkBO"
+      },
+      "clusterIPPorts": [
+        {
+          "__type__": "K8SClusterIPPort",
+          "port": 6379,
+          "targetPort": 6379
+        }
+      ]
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-ui-v2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_ui:v2_dev",
+      "deployImage": "expert/metis_ui:v2_dev",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8200,
+            "targetPort": 8200
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31028,
+            "port": 8200,
+            "targetPort": 8200
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "NODE_ENV",
+              "value": "\"production\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "\"minerva\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_NAME",
+              "value": "\"Metis\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//58.210.186.121:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_METIS_HOST",
+              "value": "//58.210.186.121:31029/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//58.210.186.121:31004/v1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-api-v2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_api:v2_dev",
+      "deployImage": "expert/metis_api:v2_dev",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7046,
+            "targetPort": 7046
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31029,
+            "port": 7046,
+            "targetPort": 7046
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_METIS",
+              "value": "cluster-ip-metis-mt-v2.expert.svc.cluster.local:7045/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-mt-v2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_mt:v2_dev",
+      "deployImage": "expert/metis_mt:v2_dev",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7045,
+            "targetPort": 7045
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.metis"
+            }
+          ],
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_DATABASE",
+              "value": "\"metis\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES",
+              "value": "\"postgres:Kt4C4TCHJ3@cluster-ip-postgres.expert.svc.cluster.local:5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DEPOT",
+              "value": "/app/data"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DEPOT_MODULE",
+              "value": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DEPOT_MODULE_v1",
+              "value": "/app/modules_v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS",
+              "value": "user:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_DB",
+              "value": "\"1\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-data-v2",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-modules-v2",
+              "claimName": "intelligence-mt-modules-v2",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-modules",
+              "claimName": "intelligence-mt-modules",
+              "mountPath": "/app/modules_v1"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "intelligence-mt-data",
+            "capacityStorage": 2000,
+            "hostPath": "expert/intelligence-mt-data"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "intelligence-mt-resource",
+            "capacityStorage": 100,
+            "hostPath": "expert/resource"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "intelligence-mt-modules-v2",
+            "capacityStorage": 30,
+            "hostPath": "expert/modules_v2"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "intelligence-mt-modules",
+            "capacityStorage": 30,
+            "hostPath": "expert/modules_v1"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "intelligence-mt-configs",
+            "capacityStorage": 5,
+            "hostPath": "expert/configs"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "intelligence-mt-wheel",
+            "capacityStorage": 100,
+            "hostPath": "expert/wheels"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "logs",
+            "capacityStorage": 100,
+            "hostPath": "expert/log"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "logs-v2",
+            "capacityStorage": 100,
+            "hostPath": "expert/log-v2"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-manager",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "metis/metis_worker_manager:v2",
+      "deployImage": "metis/metis_worker_manager:v2",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7308,
+            "targetPort": 7308
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_ADDRESS",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WEBSOCKET_PORT",
+              "value": "\"7308\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_PACKAGES_DIRECTORY",
+              "value": "\"/app/wheel\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs-v2",
+              "claimName": "logs-v2",
+              "mountPath": "/app/log"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-gpu-0",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "deployImage": "expert/metis_worker:beta",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOURCE_ROOT",
+              "value": "\"/app/resource\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "CONFIGS_ROOT",
+              "value": "\"/app/configs\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "LOG_ROOT",
+              "value": "\"/app/log\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_REPOSITORY",
+              "value": "\"/app/modules\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_URL",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_GPU",
+              "value": "\"0\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"worker:gpu\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-resource",
+              "claimName": "intelligence-mt-resource",
+              "mountPath": "/app/resource"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-modules",
+              "claimName": "intelligence-mt-modules",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-configs",
+              "claimName": "intelligence-mt-configs",
+              "mountPath": "/app/configs"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/app/log"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-gpu-1",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "deployImage": "expert/metis_worker:beta",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOURCE_ROOT",
+              "value": "\"/app/resource\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "CONFIGS_ROOT",
+              "value": "\"/app/configs\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "LOG_ROOT",
+              "value": "\"/app/log\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_REPOSITORY",
+              "value": "\"/app/modules\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_URL",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_GPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"worker:gpu\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-resource",
+              "claimName": "intelligence-mt-resource",
+              "mountPath": "/app/resource"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-modules",
+              "claimName": "intelligence-mt-modules",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-configs",
+              "claimName": "intelligence-mt-configs",
+              "mountPath": "/app/configs"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/app/log"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-gpu-2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "deployImage": "expert/metis_worker:beta",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOURCE_ROOT",
+              "value": "\"/app/resource\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "CONFIGS_ROOT",
+              "value": "\"/app/configs\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "LOG_ROOT",
+              "value": "\"/app/log\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_REPOSITORY",
+              "value": "\"/app/modules\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_URL",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_GPU",
+              "value": "\"2\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"worker:gpu\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-resource",
+              "claimName": "intelligence-mt-resource",
+              "mountPath": "/app/resource"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-modules",
+              "claimName": "intelligence-mt-modules",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-configs",
+              "claimName": "intelligence-mt-configs",
+              "mountPath": "/app/configs"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/app/log"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-gpu-3",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_worker:beta",
+      "deployImage": "expert/metis_worker:beta",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOURCE_ROOT",
+              "value": "\"/app/resource\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "CONFIGS_ROOT",
+              "value": "\"/app/configs\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "LOG_ROOT",
+              "value": "\"/app/log\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_REPOSITORY",
+              "value": "\"/app/modules\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_URL",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_GPU",
+              "value": "\"3\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"worker:gpu\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-resource",
+              "claimName": "intelligence-mt-resource",
+              "mountPath": "/app/resource"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-modules",
+              "claimName": "intelligence-mt-modules",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-configs",
+              "claimName": "intelligence-mt-configs",
+              "mountPath": "/app/configs"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/app/log"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "gpu-worker-v2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "metis/metis_worker_gpu:v1.5",
+      "deployImage": "metis/metis_worker_gpu:v1.5",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_SERVER",
+              "value": "cluster-ip-metis-worker-manager.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_PORT",
+              "value": "\"7308\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WEBSOCKET_PORT",
+              "value": "\"31000\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_PACKAGES_DIRECTORY",
+              "value": "\"/app/wheel\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"gpu_worker_1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_TYPE",
+              "value": "\"gpu\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "V1_REDIS_ADDRESS",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs-v2",
+              "claimName": "logs-v2",
+              "mountPath": "/app/log"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-1",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "metis/metis_worker:v2",
+      "deployImage": "metis/metis_worker:v2",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "GLOBAL_REDIS_ADDRESS",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_SERVER",
+              "value": "cluster-ip-metis-worker-manager.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_PORT",
+              "value": "\"7308\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_VIRTUAL_ENV_ROOT",
+              "value": "\"/app/metis-module-venv\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_PACKAGES_DIRECTORY",
+              "value": "\"/app/wheel\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_SOURCES_DIRECTORY",
+              "value": "\"/app/modules\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOURCE_ROOT",
+              "value": "\"/app/resource\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"worker_1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_TYPE",
+              "value": "cpu"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_CORE_RECORDING_PERFORMANCE",
+              "value": "\"1\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-modules-v2",
+              "claimName": "intelligence-mt-modules-v2",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-resource",
+              "claimName": "intelligence-mt-resource",
+              "mountPath": "/app/resource"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs-v2",
+              "claimName": "logs-v2",
+              "mountPath": "/app/log"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "metis/metis_worker:v2",
+      "deployImage": "metis/metis_worker:v2",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "GLOBAL_REDIS_ADDRESS",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_SERVER",
+              "value": "cluster-ip-metis-worker-manager.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_PORT",
+              "value": "\"7308\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_VIRTUAL_ENV_ROOT",
+              "value": "\"/app/metis-module-venv\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_PACKAGES_DIRECTORY",
+              "value": "\"/app/wheel\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_SOURCES_DIRECTORY",
+              "value": "\"/app/modules\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOURCE_ROOT",
+              "value": "\"/app/resource\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"worker_2\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_TYPE",
+              "value": "cpu"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_CORE_RECORDING_PERFORMANCE",
+              "value": "\"1\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-modules-v2",
+              "claimName": "intelligence-mt-modules-v2",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-resource",
+              "claimName": "intelligence-mt-resource",
+              "mountPath": "/app/resource"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs-v2",
+              "claimName": "logs-v2",
+              "mountPath": "/app/log"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-3",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "metis/metis_worker:v2",
+      "deployImage": "metis/metis_worker:v2",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "GLOBAL_REDIS_ADDRESS",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_SERVER",
+              "value": "cluster-ip-metis-worker-manager.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_PORT",
+              "value": "\"7308\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_VIRTUAL_ENV_ROOT",
+              "value": "\"/app/metis-module-venv\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_PACKAGES_DIRECTORY",
+              "value": "\"/app/wheel\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_SOURCES_DIRECTORY",
+              "value": "\"/app/modules\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOURCE_ROOT",
+              "value": "\"/app/resource\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"worker_3\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_TYPE",
+              "value": "cpu"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_CORE_RECORDING_PERFORMANCE",
+              "value": "\"1\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-modules-v2",
+              "claimName": "intelligence-mt-modules-v2",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-resource",
+              "claimName": "intelligence-mt-resource",
+              "mountPath": "/app/resource"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs-v2",
+              "claimName": "logs-v2",
+              "mountPath": "/app/log"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis-worker-4",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "metis/metis_worker:v2",
+      "deployImage": "metis/metis_worker:v2",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "GLOBAL_REDIS_ADDRESS",
+              "value": "\"redis://:bzpXOAb5GkBO@cluster-ip-redis.expert.svc.cluster.local:6379/1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_SERVER",
+              "value": "cluster-ip-metis-worker-manager.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MANAGER_WEBSOCKET_PORT",
+              "value": "\"7308\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_VIRTUAL_ENV_ROOT",
+              "value": "\"/app/metis-module-venv\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_PACKAGES_DIRECTORY",
+              "value": "\"/app/wheel\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MODULE_SOURCES_DIRECTORY",
+              "value": "\"/app/modules\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOURCE_ROOT",
+              "value": "\"/app/resource\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_DATA_ROOT",
+              "value": "\"/app/data\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_ID",
+              "value": "\"worker_4\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "WORKER_TYPE",
+              "value": "cpu"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_CORE_RECORDING_PERFORMANCE",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "METIS_CORE_RECORDING_PERFORMANCE",
+              "value": "\"1\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-wheel",
+              "claimName": "intelligence-mt-wheel",
+              "mountPath": "/app/wheel"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-modules-v2",
+              "claimName": "intelligence-mt-modules-v2",
+              "mountPath": "/app/modules"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-resource",
+              "claimName": "intelligence-mt-resource",
+              "mountPath": "/app/resource"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs-v2",
+              "claimName": "logs-v2",
+              "mountPath": "/app/log"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "intelligence-mt-data",
+              "claimName": "intelligence-mt-data",
+              "mountPath": "/app/data"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "approval",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30004,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "Kt4C4TCHJ3"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "approval/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "ui-hightech",
+      "namespace": "approval",
+      "imageCategory": "approval",
+      "srcImage": "approval/ui_hightech:hightech",
+      "deployImage": "approval/ui_hightech:hightech",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8107,
+            "targetPort": 8107
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31107,
+            "port": 8107,
+            "targetPort": 8107
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "NODE_ENV",
+              "value": "\"production\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "\"minerva\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_APP_NAME",
+              "value": "\"高企审批\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//58.210.186.121:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "//58.210.186.121:31002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RESOLVER_CONFIG",
+              "value": "resolver kube-dns.kube-system.svc.cluster.local;"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api-hightech",
+      "namespace": "approval",
+      "imageCategory": "approval",
+      "srcImage": "approval/api_hightech:hightech",
+      "deployImage": "approval/api_hightech:hightech",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7053,
+            "targetPort": 7053
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31153,
+            "port": 7053,
+            "targetPort": 7053
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.hightech"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CONNECTION_STRING",
+              "value": "postgres:Kt4C4TCHJ3@cluster-ip-postgres.approval.svc.cluster.local:5432"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DATABASE",
+              "value": "hightech"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_METIS",
+              "value": "cluster-ip-metis-mt-v2.expert.svc.cluster.local:7045/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_RPA",
+              "value": "cluster-ip-schedule-server.approval.svc.cluster.local:7777"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data1",
+              "claimName": "data1",
+              "mountPath": "/usr/src/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "data1",
+            "capacityStorage": 200,
+            "hostPath": "approval/data"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "selenium",
+      "namespace": "approval",
+      "imageCategory": "thirdparty",
+      "srcImage": "selenium/standalone-chrome:3.141.59-zirconium",
+      "deployImage": "selenium/standalone-chrome:3.141.59-zirconium",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 4444,
+            "targetPort": 4444
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": []
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "schedule-server",
+      "namespace": "approval",
+      "imageCategory": "approval",
+      "srcImage": "approval/schedule_server:latest",
+      "deployImage": "approval/schedule_server:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7777,
+            "targetPort": 7777
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30177,
+            "port": 7777,
+            "targetPort": 7777
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "APP_MODE",
+              "value": "prod"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "APP_PORT",
+              "value": "\"7777\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "COMMAND_EXECUTOR",
+              "value": "http://cluster-ip-selenium.approval.svc.cluster.local:4444/wd/hub"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "LOCAL_STORAGE_ROOT",
+              "value": "/app/local_storage_root"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SYSTEM_MONITOR_URL",
+              "value": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c1f4fedf-fd0c-4216-b143-e3b85e594462"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "schedule-server-local-storage",
+              "claimName": "schedule-server-local-storage",
+              "mountPath": "/app/local_storage_root"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "schedule-server-local-storage",
+            "capacityStorage": 800,
+            "hostPath": "approval/data/data_transfer_server_local_storage"
+          }
+        ]
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "identity-db-initalizer",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_db:latest",
+      "envs": [
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_HOST=172.24.125.23",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PORT=30001",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_DATABASE=identity-management",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_USERNAME=postgres",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PASSWORD=Kt4C4TCHJ3",
+        "DB_EXECUTION_CONTEXT=demo"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "metis-db-initalizer",
+      "imageCategory": "metis",
+      "srcImage": "expert/metis_db:latest",
+      "envs": [
+        "POSTGRES=postgres:Kt4C4TCHJ3@172.24.125.23:30003"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-hightech-initalizer",
+      "imageCategory": "approval",
+      "srcImage": "approval/db_hightech:hightech",
+      "envs": [
+        "PG_CONNECTION_STRING=postgres:Kt4C4TCHJ3@172.24.125.23:30004",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "172.24.125.23:5001/",
+    "targetRegistryUser": "testuser",
+    "targetRegistryPassword": "minerva"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "logging",
+      "identity",
+      "expert",
+      "approval"
+    ],
+    "yamlOutputRootDir": "../project-gaoqishenpi/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "identity-management",
+        "server": "172.24.125.23",
+        "port": "30001",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/identity",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "metis",
+        "server": "172.24.125.23",
+        "port": "30003",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/metis",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "hightech",
+        "server": "172.24.125.23",
+        "port": "30004",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/approval",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

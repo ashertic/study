@@ -1,0 +1,1369 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "minerva",
+    "project": "EHi Car",
+    "env": "development",
+    "description": "Ehi Car",
+    "mode": "k8s",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "/data1/project-dialog/data_root",
+    "imageOutputRootDir": "../project-dialog/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "dialog",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "/meinenghua/postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30002,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "dialog/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "RabbitMQService",
+      "name": "rabbitmq",
+      "namespace": "dialog",
+      "imageCategory": "thirdparty",
+      "srcImage": "rabbitmq:3.8-rc-management-alpine",
+      "deployImage": "/meinenghua/rabbitmq:3.8-rc-management-alpine",
+      "k8s": {
+        "__type__": "RabbitMQServiceK8SConfig",
+        "nodeTag": "cpu-ehic",
+        "nodePort": 30011,
+        "rabbitMQErlangCookie": "IMAZXXSDUZDQYLVUGFMC",
+        "rabbitMQUser": "admin",
+        "rabbitMQPassword": "X1n8d5KTlH9wegSJqY"
+      }
+    },
+    {
+      "__type__": "RedisService",
+      "name": "redis",
+      "namespace": "dialog",
+      "imageCategory": "thirdparty",
+      "srcImage": "redis:5.0.5-alpine",
+      "deployImage": "/meinenghua/redis:5.0.5-alpine",
+      "k8s": {
+        "__type__": "RedisServiceK8SConfig",
+        "nodeTag": "cpu-ehic",
+        "nodePort": 30012,
+        "redisPassword": "OYWs72GkyoSENfNQW2"
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api-css",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/api_customer_service:ehic",
+      "deployImage": "/meinenghua/dialog/api_customer_service:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7012,
+            "targetPort": 7012
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.css"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_DIALOG_ROOT_URL",
+              "value": "cluster-ip-mt-bot-dialog.dialog.svc.cluster.local:7002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "logs",
+            "capacityStorage": 200,
+            "hostPath": "dialog/logs"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api-css-admin",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/api_customer_service_admin:ehic",
+      "deployImage": "/meinenghua/dialog/api_customer_service_admin:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7007,
+            "targetPort": 7007
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.css-admin"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_DIALOG_ROOT_URL",
+              "value": "cluster-ip-mt-bot-dialog.dialog.svc.cluster.local:7002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_REPORT_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-report.dialog.svc.cluster.local:7010"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_TASK_DIALOG_POC_ROOT_URL",
+              "value": "cluster-ip-mt-task-dialog-poc.dialog.svc.cluster.local:7021"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "gateway-agent",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/gateway_agent:ehic",
+      "deployImage": "/meinenghua/dialog/gateway_agent:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9500,
+            "targetPort": 9500
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.gw.css-agent"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_PASSWORD",
+              "value": "OYWs72GkyoSENfNQW2"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_HOST",
+              "value": "cluster-ip-rabbitmq.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PORT",
+              "value": "\"5672\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_USERNAME",
+              "value": "admin"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PASSWORD",
+              "value": "X1n8d5KTlH9wegSJqY"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "gateway-client",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/gateway_client:ehic",
+      "deployImage": "/meinenghua/dialog/gateway_client:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9400,
+            "targetPort": 9400
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.gw.css-client"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_PASSWORD",
+              "value": "OYWs72GkyoSENfNQW2"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_HOST",
+              "value": "cluster-ip-rabbitmq.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PORT",
+              "value": "\"5672\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_USERNAME",
+              "value": "admin"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PASSWORD",
+              "value": "X1n8d5KTlH9wegSJqY"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "ui-css-admin",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/custom_service_admin_ui:ehic",
+      "deployImage": "/meinenghua/dialog/custom_service_admin_ui:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9101,
+            "targetPort": 8080
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "NODE_ENV",
+              "value": "production"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//www.meinenghua.com"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": "meinenghua.com"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//api-account.meinenghua.com/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "//account.meinenghua.com"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOMER_SERVICE_ADMIN_API_HOST",
+              "value": "//api-css-admin.meinenghua.com/api/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOMER_SERVICE_ADMIN_FILE_HOST",
+              "value": "//api-css-admin.meinenghua.com/file/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOM_SERVICE_AGENT_GATEWAY",
+              "value": "//gw-css-admin.meinenghua.com"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_RESOURCE_HOST",
+              "value": "\"\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "ui-css-client",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/custom_service_client_ui:ehic",
+      "deployImage": "/meinenghua/dialog/custom_service_client_ui:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9300,
+            "targetPort": 8080
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "NODE_ENV",
+              "value": "production"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOM_SERVICE_GATEWAY_HOST",
+              "value": "//gw-css-client.meinenghua.com"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-agent-manage",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_agent_management:ehic",
+      "deployImage": "/meinenghua/dialog/ms_agent_management:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9401,
+            "targetPort": 9401
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.agent-manage"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "OYWs72GkyoSENfNQW2"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_HOST",
+              "value": "cluster-ip-rabbitmq.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PORT",
+              "value": "\"5672\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_USERNAME",
+              "value": "admin"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PASSWORD",
+              "value": "X1n8d5KTlH9wegSJqY"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_DIALOG_ROOT_URL",
+              "value": "cluster-ip-mt-bot-dialog.dialog.svc.cluster.local:7002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-bot-dialog",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_bot_dialog:ehic",
+      "deployImage": "/meinenghua/dialog/ms_bot_dialog:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7002,
+            "targetPort": 7002
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.bot-dialog"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_INTENT_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-intent-engine.dialog.svc.cluster.local:6010"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-engine.dialog.svc.cluster.local:7005"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-bot-manage",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_bot_management:ehic",
+      "deployImage": "/meinenghua/dialog/ms_bot_management:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7003,
+            "targetPort": 7003
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31020,
+            "port": 7003,
+            "targetPort": 7003
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.bot-manage"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "OYWs72GkyoSENfNQW2"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_DATABASE",
+              "value": "bot-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_CLUSTER_RETRIEVER_ROOT_URL",
+              "value": "cluster-ip-nlp-cluster-retriever.dialog.svc.cluster.local:6002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-dialog-engine.dialog.svc.cluster.local:6002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_NORMAL_FAQ_ENGINE_ROOT_URL",
+              "value": "192.168.0.64:7781"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-client-manage",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_client_management:ehic",
+      "deployImage": "/meinenghua/dialog/ms_client_management:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7008,
+            "targetPort": 7008
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.client-manage"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_DATABASE",
+              "value": "customer-service"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-dialog-engine",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_dialog_engine:ehic",
+      "deployImage": "/meinenghua/dialog/ms_dialog_engine:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7005,
+            "targetPort": 7005
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.dialog-engine"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_CONTEXTUAL_FAQ_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-contextual-faq-engine.dialog.svc.cluster.local:6681"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-dialog-engine.dialog.svc.cluster.local:6002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_NORMAL_FAQ_ENGINE_ROOT_URL",
+              "value": "192.168.0.64:7781"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_UA_FAQ_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-contextual-faq-engine.dialog.svc.cluster.local:6681"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-dialog-message",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_dialog_message:ehic",
+      "deployImage": "/meinenghua/dialog/ms_dialog_message:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7004,
+            "targetPort": 7004
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.dialog-message"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_DATABASE",
+              "value": "dialog-message"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-dialog-report",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_dialog_report:ehic",
+      "deployImage": "/meinenghua/dialog/ms_dialog_report:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7010,
+            "targetPort": 7010
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.dialog-report"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_DATABASE",
+              "value": "dialog-report"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "logs",
+              "claimName": "logs",
+              "mountPath": "/root/logs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "pipeline-dialog-report",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/pipeline_dialog_report:ehic",
+      "deployImage": "/meinenghua/dialog/pipeline_dialog_report:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7009,
+            "targetPort": 7009
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.pl.dialog-report"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "OYWs72GkyoSENfNQW2"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_DATABASE",
+              "value": "dialog-report"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_DATABASE",
+              "value": "bot-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_DATABASE",
+              "value": "dialog-message"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_DATABASE",
+              "value": "customer-service"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_PASSWORD",
+              "value": "W3n9JdFMUPYz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "pipeline-nlp-service",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/pipeline_nlp_service:ehic",
+      "deployImage": "/meinenghua/dialog/pipeline_nlp_service:ehic",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7011,
+            "targetPort": 7011
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-ehic",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.pl.nlp-service"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "OYWs72GkyoSENfNQW2"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-dialog-engine.dialog.svc.cluster.local:6002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-bot-management-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_bot_management:ehic",
+      "envs": [
+        "PG_BOT_MANAGEMENT_HOST=192.168.1.9",
+        "PG_BOT_MANAGEMENT_PORT=30002",
+        "PG_BOT_MANAGEMENT_DATABASE=bot-management",
+        "PG_BOT_MANAGEMENT_USERNAME=postgres",
+        "PG_BOT_MANAGEMENT_PASSWORD=W3n9JdFMUPYz",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-customer-service-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_customer_service:ehic",
+      "envs": [
+        "PG_CUSTOMER_SERVICE_HOST=192.168.1.9",
+        "PG_CUSTOMER_SERVICE_PORT=30002",
+        "PG_CUSTOMER_SERVICE_DATABASE=customer-service",
+        "PG_CUSTOMER_SERVICE_USERNAME=postgres",
+        "PG_CUSTOMER_SERVICE_PASSWORD=W3n9JdFMUPYz",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-dialog-message-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_dialog_message:ehic",
+      "envs": [
+        "PG_DIALOG_MESSAGE_HOST=192.168.1.9",
+        "PG_DIALOG_MESSAGE_PORT=30002",
+        "PG_DIALOG_MESSAGE_DATABASE=dialog-message",
+        "PG_DIALOG_MESSAGE_USERNAME=postgres",
+        "PG_DIALOG_MESSAGE_PASSWORD=W3n9JdFMUPYz",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-dialog-report-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_dialog_report:ehic",
+      "envs": [
+        "PG_DIALOG_REPORT_HOST=192.168.1.9",
+        "PG_DIALOG_REPORT_PORT=30002",
+        "PG_DIALOG_REPORT_DATABASE=dialog-report",
+        "PG_DIALOG_REPORT_USERNAME=postgres",
+        "PG_DIALOG_REPORT_PASSWORD=W3n9JdFMUPYz",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "swr.cn-north-4.myhuaweicloud.com",
+    "targetRegistryUser": "cn-north-4@IEMJQQ1GEOZBP3QE0U5Y",
+    "targetRegistryPassword": "b27fe0087f9c9c268e105cac939d49c163f674e8d2165db0acf7ac75b80bab4b"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "dialog"
+    ],
+    "yamlOutputRootDir": "../project-dialog/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "bot-management",
+        "server": "192.168.1.9",
+        "port": "30002",
+        "user": "postgres",
+        "password": "W3n9JdFMUPYz",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "customer-service",
+        "server": "192.168.1.9",
+        "port": "30002",
+        "user": "postgres",
+        "password": "W3n9JdFMUPYz",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "dialog-message",
+        "server": "192.168.1.9",
+        "port": "30002",
+        "user": "postgres",
+        "password": "W3n9JdFMUPYz",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "dialog-report",
+        "server": "192.168.1.9",
+        "port": "30002",
+        "user": "postgres",
+        "password": "W3n9JdFMUPYz",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

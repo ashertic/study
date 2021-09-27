@@ -1,0 +1,1017 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "pwc",
+    "project": "DS CIDR",
+    "env": "development",
+    "description": "这是个PWC DS的CIDR项目的配置文件，测试配置，部署新的Image前，先使用这个来在本地测试",
+    "mode": "k8s",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "../project-pwc-ds/data_root",
+    "imageOutputRootDir": "../project-pwc-ds/images"
+  },
+  "services": [
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-elasticsearch",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "elasticsearch:7.5.0",
+      "deployImage": "elasticsearch:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "fluent-bit",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "fluent-bit:1.3",
+      "deployImage": "fluent-bit:1.3",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-kibana",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "kibana:7.5.0",
+      "deployImage": "kibana:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "identity",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30001,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "w2cSXxHjlcbwYv6zLeyh"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "identity/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "homepage-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "privatization/pwc-home-page:latest",
+      "deployImage": "identity/homepage_ui:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31001,
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "https://cn-idir.asia.pwcinternal.com:50001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": "\"cn-idir.asia.pwcinternal.com\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "https://cn-idir.asia.pwcinternal.com:50000"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "https://cn-idir.asia.pwcinternal.com:443/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_PWC_DEPARTMENT",
+              "value": "DS"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_ui:latest",
+      "deployImage": "identity/identity_ui:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31002,
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": "\"cn-idir.asia.pwcinternal.com\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "https://cn-idir.asia.pwcinternal.com:50000"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "https://cn-idir.asia.pwcinternal.com:443/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_FOOTER_TEXT",
+              "value": "\"©2019 苏州美能华智能科技有限公司\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_SAML",
+              "value": "saml"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "token-mt",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/token_mt:latest",
+      "deployImage": "identity/token_mt:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5100,
+            "targetPort": 5100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_EXPIRED_DAYS",
+              "value": "\"7\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_KEY",
+              "value": "jd98u3oijmrf9u02p3kemf9q7uyrhfgnm4tuer9vcjkm34ijo"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_STATIC",
+              "value": "\"true\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity-api",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_api:latest",
+      "deployImage": "identity/identity_api:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5200,
+            "targetPort": 5200
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31004,
+            "port": 5200,
+            "targetPort": 5200
+          }
+        ],
+        "externalName": {
+          "__type__": "K8SExternalName",
+          "name": "vprofile-service",
+          "externalName": "cnshaapppwv251.asia.pwcinternal.com",
+          "port": "80",
+          "targetPort": "80"
+        },
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_IDENTITY",
+              "value": "identity-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES",
+              "value": "postgres:w2cSXxHjlcbwYv6zLeyh@cluster-ip-postgres.identity.svc.cluster.local:5432"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "http://cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_HOME_PAGE",
+              "value": "https://cn-idir.asia.pwcinternal.com:50000"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_NAME_ID_FORMAT",
+              "value": "email"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_IDP_ENTITY_ID",
+              "value": "ofis:pwc:broker:d"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_IDP_SIGNING_CERT",
+              "value": "\"MIIDQjCCAiqgAwIBAgIQOctgSIknrbZI6x6k5oMIPzANBgkqhkiG9w0BAQsFADArMSkwJwYDVQQDEyBUaGVPcHRpbWFsQ2xvdWRTaWduaW5nQ2VydFB3Q0RldjAgFw0xOTA1MDEwNDAwMDBaGA8yMDUwMTIzMTA0MDAwMFowKzEpMCcGA1UEAxMgVGhlT3B0aW1hbENsb3VkU2lnbmluZ0NlcnRQd0NEZXYwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCPgJVkEQgDbEdF9wrTP19DOgNA+yXVzOmFkuUx/iMIaPLBHG7JXuG6gS5XvRpTUSt1TB+a6IOmzjjgKb2SERRVuhpLtzWWftb4m3xOzgPSBkwXwCMv0kbUZsDjT4a6JIwBf2QN4A3Wak0QtQ86evgeJ2itUPuN/5l3DpNeLVHhc64D9LdBdBFMFzK3mOagMcETn+dv0Ofy6Qs1+K0sfBBtfEzr6XptEI9O+XVWkkOIr2RqOPoDdm0hu98USjXjWGqqw/t0NwUQ3Fvp5wvczEExjcPVBWWGu9WEunP26XMDQDCv+G63vdAIRlZ8vn3zkfxcOivCrjLAgOm3cd725ptAgMBAAGjYDBeMFwGA1UdAQRVMFOAEG7a6Tlpb33QUD0cN5aSf0+hLTArMSkwJwYDVQQDEyBUaGVPcHRpbWFsQ2xvdWRTaWduaW5nQ2VydFB3Q0RldoIQOctgSIknrbZI6x6k5oMIPzANBgkqhkiG9w0BAQsFAAOCAQEAVR/utLikBGmssoLcpEze6gRMHNhowrwf59Hf0gR8Sknekxwj2GQQdB5+TsrwM5MXP9R4yxrvrUdpy54re7vitD3+rmicdZzLK0mOXJXjAFZhMBLmByQrfhua70oFQGHV3IZArvw72Yn0LgXCJ1m/C68QqmfEWTLp4Q7fbyEFtHm0Gnxl9rX1281z4dO3uK7pcZ7obpXuFh5/0coih9nX79FszRQjxmaKofrtc15r1tzkw48x9Kp8Pe+Cb25ihrKp2bSEY3QQ5kCXtnGmm2Rgek04sfqbqW3PaUxMZ8iDSo0EZd5ef5RCIWsj9U2WnF1f99sEoxPDBsUrXQMI9cssdw==\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_IDP_SSO_LOCATION",
+              "value": "https://fedsvc-dev.pwc.com/ofisd/"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_IDP_SLO_LOCATION",
+              "value": "https://fedsvc-dev.pwc.com/ofisd/"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_SP_ENTITY_ID",
+              "value": "urn:saml2:cn-idir:p"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_SP_ACS_LOCATION",
+              "value": "https://cn-idir.asia.pwcinternal.com/logincallback"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SAML_SP_SLO_LOCATION",
+              "value": "https://cn-idir.asia.pwcinternal.com/logoutcallback"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "RabbitMQService",
+      "name": "rabbitmq",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "rabbitmq:3.8-rc-management-alpine",
+      "deployImage": "rabbitmq:3.8-rc-management-alpine",
+      "k8s": {
+        "__type__": "RabbitMQServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "nodePort": 30012,
+        "rabbitMQErlangCookie": "IMAZXXSDUZDQYLVUGFMC",
+        "rabbitMQUser": "",
+        "rabbitMQPassword": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "labeling-ui",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/labeling_ui:latest",
+      "deployImage": "expert/labeling_ui:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32305,
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "https://cn-idir.asia.pwcinternal.com:50000"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "https://cn-idir.asia.pwcinternal.com:50001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": "\"cn-idir.asia.pwcinternal.com\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_API_HOST",
+              "value": "https://cn-idir.asia.pwcinternal.com:443/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_READER_API_HOST",
+              "value": "https://cn-idir.asia.pwcinternal.com:60002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_OCR_API_ROOT_URL",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "\"minerva\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_PRIMARY_COLOR",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_NAME",
+              "value": "\"智能文本信息读取\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_FOOTER_TEXT",
+              "value": "\"©2019 苏州美能华智能科技有限公司\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-mt",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:latest",
+      "deployImage": "expert/information_extraction:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5001,
+            "targetPort": 5001
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32306,
+            "port": 5001,
+            "targetPort": 5001
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_HTTPS",
+              "value": "\"0\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.primary"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_PRIMARY",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "information-extraction-workspace",
+            "capacityStorage": 500,
+            "hostPath": "information-extraction/workspace"
+          },
+          {
+            "__type__": "K8SVolume",
+            "name": "information-extraction-session",
+            "capacityStorage": 500,
+            "hostPath": "information-extraction/session"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu0",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:latest",
+      "deployImage": "expert/information_extraction:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.0"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu1",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:latest",
+      "deployImage": "expert/information_extraction:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu2",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:latest",
+      "deployImage": "expert/information_extraction:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.2"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-cpu3",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:latest",
+      "deployImage": "expert/information_extraction:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_CPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.cpu.3"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-gpu0",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:latest",
+      "deployImage": "expert/information_extraction:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "livenessProbe": "information_extraction_livenessProbe",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_GPU",
+              "value": "\"0\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINER",
+              "value": "\"0\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.gpu0"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-gpu1",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:latest",
+      "deployImage": "expert/information_extraction:latest",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "needPrivilegedPermission": true,
+          "livenessProbe": "information_extraction_livenessProbe",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_ESHOST",
+              "value": "http://cluster-ip-log-elasticsearch.logging.svc.cluster.local:9200"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_GPU",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINER",
+              "value": "\"1\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_INSTANCE_ID",
+              "value": "mt.gpu1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MQHOST",
+              "value": "cluster-ip-rabbitmq.expert.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_TRAINABLE",
+              "value": "\"\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "MT_MACHINE_ID",
+              "value": "\"\""
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "workspace",
+              "claimName": "information-extraction-workspace",
+              "mountPath": "/app/package/data/workspace"
+            },
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "session",
+              "claimName": "information-extraction-session",
+              "mountPath": "/app/package/data/session"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "identity-db-initalizer",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_db:latest",
+      "envs": [
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_HOST=192.168.1.35",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PORT=30001",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_DATABASE=identity-management",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_USERNAME=postgres",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PASSWORD=w2cSXxHjlcbwYv6zLeyh",
+        "DB_EXECUTION_CONTEXT=pwcds"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "192.168.1.35:5001/",
+    "targetRegistryUser": "testuser",
+    "targetRegistryPassword": "minerva"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "logging",
+      "identity",
+      "expert"
+    ],
+    "yamlOutputRootDir": "../project-pwc-ds/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "nginxContext": {
+    "__type__": "NginxContext",
+    "certDir": "../project-pwc-ds/nginx-cert",
+    "targetNginxDir": "/data/project-pwc-ds/nginx",
+    "containerName": "nginx",
+    "imageCategory": "thirdparty",
+    "srcImage": "nginx:1.17.6",
+    "servers": [
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "homepage ui",
+        "sslListenPort": 50000,
+        "serverName": "cn-idir.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.1.35:31001"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "identity ui",
+        "sslListenPort": 50001,
+        "serverName": "cn-idir.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.1.35:31002"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "reader ui",
+        "sslListenPort": 50003,
+        "serverName": "cn-idir.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.1.35:32305"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "identity api",
+        "sslListenPort": 443,
+        "serverName": "cn-idir.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.1.35:31004"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "information extraction api",
+        "sslListenPort": 60002,
+        "serverName": "cn-idir.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.1.35:32306"
+      }
+    ]
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "identity-management",
+        "server": "192.168.1.35",
+        "port": "30001",
+        "user": "postgres",
+        "password": "w2cSXxHjlcbwYv6zLeyh",
+        "diskDir": "/dbbackup/identity",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

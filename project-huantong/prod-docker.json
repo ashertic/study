@@ -1,0 +1,98 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "huantong",
+    "project": "huantong",
+    "env": "development",
+    "description": "这是为寰通项目生产环境的的配置文件",
+    "mode": "docker",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "../huantong/data_root",
+    "imageOutputRootDir": "../huantong/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "identity",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "pg",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": ["5432:5432"],
+        "envs": ["POSTGRES_PASSWORD=\"Kt4C4TCHJ3\""],
+        "volumes": ["/postgres:/var/lib/postgresql/data"],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "oval-api",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "oval/oval_api:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "oval-api",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": ["8228:7001"],
+        "envs": [
+          "POSTGRES=\"postgres:Kt4C4TCHJ3@172.20.57.243:5432\"",
+          "POSTGRES_DATABASE=oval",
+          "WORKER_TIMEOUTE=\"60\"",
+          "SCHEDULE_INTERVAL=\"10\"",
+          "SERVICE_WORKER=http://172.20.57.243:8500",
+          "ENDPOINT=http://172.20.57.243:8228",
+          "TOP_K=\"20\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "identity-db-initalizer",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_db:latest",
+      "useHostNetwork": false,
+      "envs": [
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_HOST=172.20.57.243",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PORT=5432",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_DATABASE=identity-management",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_USERNAME=postgres",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PASSWORD=\"Kt4C4TCHJ3\"",
+        "DB_EXECUTION_CONTEXT=demo"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/"
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "identity-management",
+        "server": "172.20.57.243",
+        "port": "5432",
+        "user": "postgres",
+        "password": "Kt4C4TCHJ3",
+        "diskDir": "/dbbackup/identity",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

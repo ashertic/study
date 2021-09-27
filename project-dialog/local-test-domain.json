@@ -1,0 +1,1970 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "minerva",
+    "project": "dev staging",
+    "env": "development",
+    "description": "minerva use this to test dev code",
+    "mode": "k8s",
+    "os": "ubuntu",
+    "osVersion": "18.04",
+    "dataPathRoot": "../project-dialog/data_root",
+    "imageOutputRootDir": "../project-dialog/images"
+  },
+  "services": [
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-elasticsearch",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "elasticsearch:7.5.0",
+      "deployImage": "elasticsearch:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "elasticsearch",
+            "capacityStorage": "200Gi",
+            "hostPath": "logging/elasticsearch"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "fluent-bit",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "fluent-bit:1.4",
+      "deployImage": "fluent-bit:1.4",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "EFKLoggingService",
+      "name": "log-kibana",
+      "namespace": "logging",
+      "imageCategory": "thirdparty",
+      "srcImage": "kibana:7.5.0",
+      "deployImage": "kibana:7.5.0",
+      "k8s": {
+        "__type__": "EFKLoggingServiceK8SConfig",
+        "nodeTag": "gpu-001"
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "identity",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30001,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "Minerva001"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "identity/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "homepage-pwc-css-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "privatization/home_page_pwc_css:pwc_1.0.0",
+      "deployImage": "privatization/home_page_pwc_css:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8801,
+            "targetPort": 8801
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50000,
+            "port": 8801,
+            "targetPort": 8801
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": ""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//hkappulv056.asia.pwcinternal.com:31004/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_PRIMARY_COLOR",
+              "value": "\"#D04902\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TEST_LOGIN",
+              "value": "email"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "homepage-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/homepage_ui:pwc_1.0.0",
+      "deployImage": "identity/homepage_ui:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50001,
+            "port": 8082,
+            "targetPort": 8082
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "minerva"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT_NAME",
+              "value": "美能华"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": ""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//hkappulv056.asia.pwcinternal.com:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "//hkappulv056.asia.pwcinternal.com:31002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//hkappulv056.asia.pwcinternal.com:31004/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_DIALOG_ROOT_URL",
+              "value": "//hkappulv056.asia.pwcinternal.com:31014"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity-ui",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_ui:pwc_1.0.0",
+      "deployImage": "identity/identity_ui:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50002,
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": ""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "pwc"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//hkappulv056.asia.pwcinternal.com:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_DIALOG_ROOT_URL",
+              "value": "//hkappulv056.asia.pwcinternal.com:31014"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//hkappulv056.asia.pwcinternal.com:31004/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_FOOTER_TEXT",
+              "value": "\"©2020 苏州美能华智能科技有限公司\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "identity-api",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_api:pwc_1.0.0",
+      "deployImage": "identity/identity_api:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5200,
+            "targetPort": 5200
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50004,
+            "port": 5200,
+            "targetPort": 5200
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.identity"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_IDENTITY",
+              "value": "identity-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES",
+              "value": "postgres:Minerva001@cluster-ip-postgres.identity.svc.cluster.local:5432"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VPROFILE_ENDPOINT",
+              "value": "cluster-ip-mock-api.identity.svc.cluster.local:5202/api/v1/v-profile"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VPROFILE_APIACCESS",
+              "value": "\"dnJ1SnErMXU2TmdZZGlzUkQ1R3V2SG9kbWlWWWY4UCs4Rnp0MUxmaXpOSmVySCtMaUdaN3cwSFAxbVQxaXdaMQ==\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VPROFILE_TENANT_ID",
+              "value": "\"3\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mock-api",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/mock_api:pwc_1.0.0",
+      "deployImage": "identity/mock_api:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5202,
+            "targetPort": 5202
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50021,
+            "port": 5202,
+            "targetPort": 5202
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.mock"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "token-mt",
+      "namespace": "identity",
+      "imageCategory": "identity",
+      "srcImage": "identity/token_mt:pwc_1.0.0",
+      "deployImage": "identity/token_mt:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5100,
+            "targetPort": 5100
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.token"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_EXPIRED_DAYS",
+              "value": "\"7\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_KEY",
+              "value": "jd98u3oijmrf9u02p3kemf9q7uyrhfgnm4tuer9vcjkm34ijo"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SECRET_STATIC",
+              "value": "\"true\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "dialog",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30002,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "Minerva001"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "dialog/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "RabbitMQService",
+      "name": "rabbitmq",
+      "namespace": "dialog",
+      "imageCategory": "thirdparty",
+      "srcImage": "rabbitmq:3.8-rc-management-alpine",
+      "deployImage": "rabbitmq:3.8-rc-management-alpine",
+      "k8s": {
+        "__type__": "RabbitMQServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "nodePort": 30011,
+        "rabbitMQErlangCookie": "IMAZXXSDUZDQYLVUGFMC",
+        "rabbitMQUser": "",
+        "rabbitMQPassword": ""
+      }
+    },
+    {
+      "__type__": "RedisService",
+      "name": "redis",
+      "namespace": "dialog",
+      "imageCategory": "thirdparty",
+      "srcImage": "redis:5.0.5-alpine",
+      "deployImage": "redis:5.0.5-alpine",
+      "k8s": {
+        "__type__": "RedisServiceK8SConfig",
+        "nodeTag": "gpu-001",
+        "nodePort": 30012,
+        "redisPassword": "Minerva001"
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api-css",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/api_customer_service:pwc_1.0.0",
+      "deployImage": "dialog/api_customer_service:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7012,
+            "targetPort": 7012
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50010,
+            "port": 7012,
+            "targetPort": 7012
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.css"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_DIALOG_ROOT_URL",
+              "value": "cluster-ip-mt-bot-dialog.dialog.svc.cluster.local:7002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api-css-admin",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/api_customer_service_admin:pwc_1.0.0",
+      "deployImage": "dialog/api_customer_service_admin:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7007,
+            "targetPort": 7007
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50011,
+            "port": 7007,
+            "targetPort": 7007
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.css-admin"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_AGENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-agent-manage.dialog.svc.cluster.local:9401"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_DIALOG_ROOT_URL",
+              "value": "cluster-ip-mt-bot-dialog.dialog.svc.cluster.local:7002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_REPORT_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-report.dialog.svc.cluster.local:7010"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_TASK_DIALOG_POC_ROOT_URL",
+              "value": "cluster-ip-mt-task-dialog-poc.dialog.svc.cluster.local:7021"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "gateway-agent",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/gateway_agent:pwc_1.0.0",
+      "deployImage": "dialog/gateway_agent:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9500,
+            "targetPort": 9500
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50012,
+            "port": 9500,
+            "targetPort": 9500
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.gw.css-agent"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_HOST",
+              "value": "cluster-ip-rabbitmq.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PORT",
+              "value": "\"5672\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_USERNAME",
+              "value": "admin"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PASSWORD",
+              "value": "Minerva001"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "gateway-client",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/gateway_client:pwc_1.0.0",
+      "deployImage": "dialog/gateway_client:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9400,
+            "targetPort": 9400
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50013,
+            "port": 9400,
+            "targetPort": 9400
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.gw.css-client"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SOCKETIO_REDIS_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_HOST",
+              "value": "cluster-ip-rabbitmq.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PORT",
+              "value": "\"5672\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_USERNAME",
+              "value": "admin"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PASSWORD",
+              "value": "Minerva001"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "ui-css-admin",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/custom_service_admin_ui:pwc_1.0.0",
+      "deployImage": "dialog/custom_service_admin_ui:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9101,
+            "targetPort": 8080
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50014,
+            "port": 9101,
+            "targetPort": 8080
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "NODE_ENV",
+              "value": "production"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "pwc"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//hkappulv056.asia.pwcinternal.com:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": ""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//hkappulv056.asia.pwcinternal.com:31004/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "//hkappulv056.asia.pwcinternal.com:31002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOMER_SERVICE_ADMIN_HOST",
+              "value": "//hkappulv056.asia.pwcinternal.com:31011"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOM_SERVICE_AGENT_GATEWAY",
+              "value": "//hkappulv056.asia.pwcinternal.com:31012"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_RESOURCE_HOST",
+              "value": "\"\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "ui-css-client",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/custom_service_client_ui:pwc_1.0.0",
+      "deployImage": "dialog/custom_service_client_ui:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9300,
+            "targetPort": 8080
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 50015,
+            "port": 9300,
+            "targetPort": 8080
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "NODE_ENV",
+              "value": "production"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "pwc"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_V_PROFILE_APP_CODE",
+              "value": "sda@pwccnhk"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_V_PROFILE_LOGIN_PAGE",
+              "value": "//hkappulv056.asia.pwcinternal.com:31021"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//hkappulv056.asia.pwcinternal.com:31004"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOM_SERVICE_GATEWAY_HOST",
+              "value": "//hkappulv056.asia.pwcinternal.com:31013"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOMER_SERVICE_ADMIN_HOST",
+              "value": "//hkappulv056.asia.pwcinternal.com:31011"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-agent-manage",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_agent_management:pwc_1.0.0",
+      "deployImage": "dialog/ms_agent_management:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9401,
+            "targetPort": 9401
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.agent-manage"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_HOST",
+              "value": "cluster-ip-rabbitmq.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PORT",
+              "value": "\"5672\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_USERNAME",
+              "value": "admin"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "RABBIT_MQ_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_DIALOG_ROOT_URL",
+              "value": "cluster-ip-mt-bot-dialog.dialog.svc.cluster.local:7002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_REPORT_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-report.dialog.svc.cluster.local:7010"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-bot-dialog",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_bot_dialog:pwc_1.0.0",
+      "deployImage": "dialog/ms_bot_dialog:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7002,
+            "targetPort": 7002
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.bot-dialog"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_INTENT_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-intent-engine.dialog.svc.cluster.local:6010"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-engine.dialog.svc.cluster.local:7005"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-bot-manage",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_bot_management:pwc_1.0.0",
+      "deployImage": "dialog/ms_bot_management:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7003,
+            "targetPort": 7003
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31020,
+            "port": 7003,
+            "targetPort": 7003
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.bot-manage"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_DATABASE",
+              "value": "bot-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_CLUSTER_RETRIEVER_ROOT_URL",
+              "value": "cluster-ip-nlp-cluster-retriever.dialog.svc.cluster.local:60056"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-dialog-engine.dialog.svc.cluster.local:6002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_NORMAL_FAQ_ENGINE_ROOT_URL",
+              "value": "192.168.0.64:7781"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_LABEL_ENGINE_ROOT_URL",
+              "value": "192.168.0.64:7782"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_NORMAL_FAQ_TEST_ROOT_URL",
+              "value": "192.168.0.64:7783"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-client-manage",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_client_management:pwc_1.0.0",
+      "deployImage": "dialog/ms_client_management:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7008,
+            "targetPort": 7008
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.client-manage"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_DATABASE",
+              "value": "customer-service"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-dialog-engine",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_dialog_engine:pwc_1.0.0",
+      "deployImage": "dialog/ms_dialog_engine:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7005,
+            "targetPort": 7005
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.dialog-engine"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_CONTEXTUAL_FAQ_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-contextual-faq-engine.dialog.svc.cluster.local:6681"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-dialog-engine.dialog.svc.cluster.local:6002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_NORMAL_FAQ_ENGINE_ROOT_URL",
+              "value": "192.168.0.64:7781"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_UA_FAQ_ENGINE_ROOT_URL",
+              "value": "192.168.0.64:6681"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-dialog-message",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_dialog_message:pwc_1.0.0",
+      "deployImage": "dialog/ms_dialog_message:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7004,
+            "targetPort": 7004
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.dialog-message"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_DATABASE",
+              "value": "dialog-message"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_PASSWORD",
+              "value": "Minerva001"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-dialog-report",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_dialog_report:pwc_1.0.0",
+      "deployImage": "dialog/ms_dialog_report:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7010,
+            "targetPort": 7010
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.dialog-report"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_DATABASE",
+              "value": "dialog-report"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_PASSWORD",
+              "value": "Minerva001"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "pipeline-dialog-report",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/pipeline_dialog_report:pwc_1.0.0",
+      "deployImage": "dialog/pipeline_dialog_report:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7009,
+            "targetPort": 7009
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.pl.dialog-report"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_DATABASE",
+              "value": "dialog-report"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_REPORT_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_DATABASE",
+              "value": "bot-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_DATABASE",
+              "value": "dialog-message"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_DIALOG_MESSAGE_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_HOST",
+              "value": "cluster-ip-postgres.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_DATABASE",
+              "value": "customer-service"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_CUSTOMER_SERVICE_PASSWORD",
+              "value": "Minerva001"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "pipeline-nlp-service",
+      "namespace": "dialog",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/pipeline_nlp_service:pwc_1.0.0",
+      "deployImage": "dialog/pipeline_nlp_service:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7011,
+            "targetPort": 7011
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "gpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.pl.nlp-service"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "Minerva001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-dialog-engine.dialog.svc.cluster.local:6002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_NORMAL_FAQ_ENGINE_ROOT_URL",
+              "value": "192.168.0.64:7781"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog.svc.cluster.local:7003"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-identity-initializer",
+      "imageCategory": "identity",
+      "srcImage": "identity/identity_db:pwc_1.0.0",
+      "envs": [
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_HOST=192.168.0.64",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PORT=30001",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_DATABASE=identity-management",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_USERNAME=postgres",
+        "POSTGRES_DB_IDENTITY_MANAGEMENT_PASSWORD=Minerva001",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-bot-management-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_bot_management:pwc_1.0.0",
+      "envs": [
+        "PG_BOT_MANAGEMENT_HOST=192.168.0.64",
+        "PG_BOT_MANAGEMENT_PORT=30002",
+        "PG_BOT_MANAGEMENT_DATABASE=bot-management",
+        "PG_BOT_MANAGEMENT_USERNAME=postgres",
+        "PG_BOT_MANAGEMENT_PASSWORD=Minerva001",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-customer-service-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_customer_service:pwc_1.0.0",
+      "envs": [
+        "PG_CUSTOMER_SERVICE_HOST=192.168.0.64",
+        "PG_CUSTOMER_SERVICE_PORT=30002",
+        "PG_CUSTOMER_SERVICE_DATABASE=customer-service",
+        "PG_CUSTOMER_SERVICE_USERNAME=postgres",
+        "PG_CUSTOMER_SERVICE_PASSWORD=Minerva001",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-dialog-message-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_dialog_message:pwc_1.0.0",
+      "envs": [
+        "PG_DIALOG_MESSAGE_HOST=192.168.0.64",
+        "PG_DIALOG_MESSAGE_PORT=30002",
+        "PG_DIALOG_MESSAGE_DATABASE=dialog-message",
+        "PG_DIALOG_MESSAGE_USERNAME=postgres",
+        "PG_DIALOG_MESSAGE_PASSWORD=Minerva001",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-dialog-report-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_dialog_report:pwc_1.0.0",
+      "envs": [
+        "PG_DIALOG_REPORT_HOST=192.168.0.64",
+        "PG_DIALOG_REPORT_PORT=30002",
+        "PG_DIALOG_REPORT_DATABASE=dialog-report",
+        "PG_DIALOG_REPORT_USERNAME=postgres",
+        "PG_DIALOG_REPORT_PASSWORD=Minerva001",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "192.168.0.64:5001/",
+    "targetRegistryUser": "testuser",
+    "targetRegistryPassword": "minerva"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "logging",
+      "identity",
+      "dialog"
+    ],
+    "yamlOutputRootDir": "../project-dialog/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "nginxContext": {
+    "__type__": "NginxContext",
+    "certDir": "../project-dialog/nginx-cert",
+    "targetNginxDir": "/data/project-dialog/nginx",
+    "containerName": "nginx",
+    "imageCategory": "thirdparty",
+    "srcImage": "nginx:1.17.6",
+    "servers": [
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "homepage ui - pwc css",
+        "sslListenPort": 31000,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50000"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "homepage ui",
+        "sslListenPort": 31001,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50001"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "identity ui",
+        "sslListenPort": 31002,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50002"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "ui-css-admin",
+        "sslListenPort": 31014,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50014"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "ui-css-client",
+        "sslListenPort": 31015,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50015"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "identity api",
+        "sslListenPort": 31004,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50004"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "mock api",
+        "sslListenPort": 31021,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50021"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "api-css-admin",
+        "sslListenPort": 31011,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50011"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "gateway-agent",
+        "sslListenPort": 31012,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50012"
+      },
+      {
+        "__type__": "NginxServerConfig",
+        "comment": "gateway-client",
+        "sslListenPort": 31013,
+        "serverName": "hkappulv056.asia.pwcinternal.com",
+        "proxyPass": "http://192.168.0.64:50013"
+      }
+    ]
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "identity-management",
+        "server": "192.168.0.64",
+        "port": "30001",
+        "user": "postgres",
+        "password": "Minerva001",
+        "diskDir": "/dbbackup/identity",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "bot-management",
+        "server": "192.168.0.64",
+        "port": "30002",
+        "user": "postgres",
+        "password": "Minerva001",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "customer-service",
+        "server": "192.168.0.64",
+        "port": "30002",
+        "user": "postgres",
+        "password": "Minerva001",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "dialog-message",
+        "server": "192.168.0.64",
+        "port": "30002",
+        "user": "postgres",
+        "password": "Minerva001",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      },
+      {
+        "__type__": "DatabaseInfo",
+        "name": "dialog-report",
+        "server": "192.168.0.64",
+        "port": "30002",
+        "user": "postgres",
+        "password": "Minerva001",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

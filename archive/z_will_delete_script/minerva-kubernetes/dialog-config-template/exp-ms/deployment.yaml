@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exp-ms
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-exp-ms
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-exp-ms
+    spec:
+      containers:
+      - name: exp-ms
+        image: IMAGE_BASEURL_PLACEHOLDER/dialog/ms_exp:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: RABBIT_MQ_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: rabbitmq-host
+              name: variables
+              optional: false
+        - name: RABBIT_MQ_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: rabbitmq-port
+              name: variables
+              optional: false
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: redis-host
+              name: variables
+              optional: false
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: redis-port
+              name: variables
+              optional: false
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: credential
+              optional: false
+        - name: RABBIT_MQ_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              key: rabbitmq-user
+              name: variables
+              optional: false
+        - name: RABBIT_MQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: rabbitmq-password
+              name: credential
+              optional: false
+        envFrom:
+        - configMapRef:
+            name: microservice
+        volumeMounts:
+        - mountPath: /root/logs
+          name: logdata    
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER
+      volumes:
+      - name: logdata
+        persistentVolumeClaim:
+          claimName: dialog-logs 

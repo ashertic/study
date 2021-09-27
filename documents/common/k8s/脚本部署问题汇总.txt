@@ -1,0 +1,1 @@
+1.approval-uid登陆提示用户信息失败，token显示已经登陆成功，但是界面没有数据，api没有连接到，查看api运行以及nodeport端口是否已经暴露成功。

@@ -1,0 +1,80 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "yunsai",
+    "project": "poc",
+    "env": "development",
+    "description": "这是为云赛智联的测试部署的配置文件，包括文本信息读取产品",
+    "mode": "docker",
+    "os": "centos",
+    "osVersion": "7.9",
+    "dataPathRoot": "/data/project-yunsai/data_root",
+    "imageOutputRootDir": "/data/project-yunsai/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "labeling-ui",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/labeling_ui:yunsai",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "labeling_ui",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "8082:8082"
+        ],
+        "envs": [
+          "VUE_APP_DEBUG=\"true\"",
+          "VUE_APP_READER_API_HOST=\"//192.168.0.115:5002\"",
+          "VUE_APP_TENANT=\"minerva\"",
+          "VUE_APP_PRIMARY_COLOR=\"\"",
+          "VUE_APP_NAME=\"智能文本信息读取\"",
+          "VUE_APP_FOOTER_TEXT=\"©2020 苏州美能华智能科技有限公司\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "information-extraction-debug",
+      "namespace": "expert",
+      "imageCategory": "expert",
+      "srcImage": "expert/information_extraction:yunsai",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "information-extraction-debug",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "ports": [
+          "5002:5001"
+        ],
+        "envs": [
+          "MT_INSTANCE_ID=\"mt.debug\"",
+          "MT_DEBUG=\"1\"",
+          "MT_HTTPS=\"0\"",
+          "MT_GPU=\"0\"",
+          "MT_TRAINER=\"0\"",
+          "MT_TRAINABLE=\"\"",
+          "MT_MACHINE_ID=\"Y9j89wKrqtsyBmp2+CMJfxgbP0bu/q5ZC7yhLiZprAWBWs5ZZqdkeAT9rM3FGRmdJLSXaUI9KFdVIkQLehCE/2hQ1O0w2wb4jyaW50dErzjqfyYgblAKeovg6mBRYc+wjl327zQ9RBMOmZepEDzNgvtHpNMzpk5I+i4GaaXgrcI=\""
+        ],
+        "volumes": [
+          "/information-extraction/workspace:/app/package/data/workspace",
+          "/information-extraction/session:/app/package/data/session"
+        ],
+        "command": ""
+      }
+    } 
+  ],
+  "dbInitializers": [],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/"
+  },
+  "dbBackupAndRestoreContext": {}
+}

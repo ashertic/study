@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-api
+  namespace: identity
+spec:
+  selector:
+    matchLabels:
+      app: deployment-identity-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-identity-api
+    spec:
+      containers:
+      - name: identity-api
+        image: 10.157.112.207:5001/identity/identity_api:latest
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES_IDENTITY
+          value: identity-management
+        - name: VPROFILE_ENDPOINT
+          value: external-vprofile-service.identity.svc.cluster.local:80/vProfile.API/api
+        - name: VPROFILE_APIACCESS
+          value: "MnJBbHM3S3BwaUhONzkzNlZtRC9qYVlIVjZKS0E1OUpoNHFZL05iR1licXdTQUM2MGMwZlh3PT0="
+        envFrom:
+        - configMapRef:
+            name: variables
+            optional: false
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: gpu-001

@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dialog-nlp-mla-hanlp
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 30Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/dialog/nlp-model-data/hanlp/hanlp-1.7.3-release
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dialog-nlp-mla-hanlp
+  namespace: dialog
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: dialog-nlp-mla-hanlp
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dialog-nlp-mla-ltp
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 30Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: MOUNT_DATA_PATH_PLACEHOLDER/dialog/nlp-model-data/ltp
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dialog-nlp-mla-ltp
+  namespace: dialog
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: dialog-nlp-mla-ltp

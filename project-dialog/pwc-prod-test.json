@@ -1,0 +1,438 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "minerva",
+    "project": "dev staging",
+    "env": "development",
+    "description": "minerva use this to test dev code",
+    "mode": "k8s",
+    "os": "ubuntu",
+    "osVersion": "18.04",
+    "dataPathRoot": "/data/project-dialog-test/data_root",
+    "imageOutputRootDir": "/data1/project-dialog-test/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "dialog-test",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "deployImage": "postgres:11.5-alpine",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 30500,
+            "port": 5432,
+            "targetPort": 5432
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_USER",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "POSTGRES_PASSWORD",
+              "value": "aa8zSPStp2bsc0o5HHm_4"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "postgres",
+              "mountPath": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "postgres",
+            "capacityStorage": 200,
+            "hostPath": "dialog/postgres"
+          }
+        ]
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "api-css-admin",
+      "namespace": "dialog-test",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/api_customer_service_admin:pwc_1.0.0",
+      "deployImage": "dialog_test/api_customer_service_admin:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7007,
+            "targetPort": 7007
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32511,
+            "port": 7007,
+            "targetPort": 7007
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.api.css-admin"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "SERVICE_SECRET",
+              "value": "cluster-ip-token-mt.identity.svc.cluster.local:5100/secret"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_AGENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-agent-manage.dialog.svc.cluster.local:9401"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_DIALOG_ROOT_URL",
+              "value": "cluster-ip-mt-bot-dialog.dialog.svc.cluster.local:7002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_BOT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-bot-manage.dialog-test.svc.cluster.local:7003"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_CLIENT_MANAGEMENT_ROOT_URL",
+              "value": "cluster-ip-mt-client-manage.dialog.svc.cluster.local:7008"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_REPORT_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-report.dialog.svc.cluster.local:7010"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_TASK_DIALOG_POC_ROOT_URL",
+              "value": "cluster-ip-mt-task-dialog-poc.dialog.svc.cluster.local:7021"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": " MT_IDENTITY_ROOT_URL",
+              "value": "cluster-ip-identity-mt.identity.svc.cluster.local:5201"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "ui-css-admin",
+      "namespace": "dialog-test",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/custom_service_admin_ui:pwc_1.0.0",
+      "deployImage": "dialog_test/custom_service_admin_ui:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 9101,
+            "targetPort": 8080
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 32514,
+            "port": 9101,
+            "targetPort": 8080
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-001",
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "NODE_ENV",
+              "value": "production"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_TENANT",
+              "value": "pwc"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_HOMEPAGE_ROOT_URL",
+              "value": "//intelligentchatbotplatform.asia.pwcinternal.com:31001"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_COOKIE_DOMAIN_NAME",
+              "value": ""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_IDENTITY_HOST",
+              "value": "//intelligentchatbotplatform.asia.pwcinternal.com:31004/v1"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_ACCOUNT_ROOT_URL",
+              "value": "//intelligentchatbotplatform.asia.pwcinternal.com:31002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOMER_SERVICE_ADMIN_HOST",
+              "value": "//intelligentchatbotplatform.asia.pwcinternal.com:31511"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_CUSTOM_SERVICE_AGENT_GATEWAY",
+              "value": "//intelligentchatbotplatform.asia.pwcinternal.com:31012"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "VUE_APP_RESOURCE_HOST",
+              "value": "\"\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "mt-bot-manage",
+      "namespace": "dialog-test",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/ms_bot_management:pwc_1.0.0",
+      "deployImage": "dialog_test/ms_bot_management:pwc_1.0.0",
+      "k8s": {
+        "__type__": "ServiceK8SConfig",
+        "clusterIPPorts": [
+          {
+            "__type__": "K8SClusterIPPort",
+            "port": 7003,
+            "targetPort": 7003
+          }
+        ],
+        "nodePortPorts": [
+          {
+            "__type__": "K8SNodePortPort",
+            "nodePort": 31520,
+            "port": 7003,
+            "targetPort": 7003
+          }
+        ],
+        "deployment": {
+          "__type__": "K8SDeployment",
+          "nodeTag": "cpu-001",
+          "annotations": [
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit.io/parser",
+              "value": "eggjs"
+            },
+            {
+              "__type__": "K8SDeploymentAnnotation",
+              "name": "fluentbit/tag",
+              "value": "eggjs.mt.bot-manage"
+            }
+          ],
+          "envs": [
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_HOST",
+              "value": "cluster-ip-redis.dialog.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PORT",
+              "value": "\"6379\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "REDIS_PASSWORD",
+              "value": "juz4Wz_FQH11cvtyifMpf"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_HOST",
+              "value": "cluster-ip-postgres.dialog-test.svc.cluster.local"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PORT",
+              "value": "\"5432\""
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_DATABASE",
+              "value": "bot-management"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_USERNAME",
+              "value": "postgres"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "PG_BOT_MANAGEMENT_PASSWORD",
+              "value": "aa8zSPStp2bsc0o5HHm_4"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_CLUSTER_RETRIEVER_ROOT_URL",
+              "value": "cluster-ip-nlp-cluster-retriever.dialog.svc.cluster.local:60056"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_DIALOG_ENGINE_ROOT_URL",
+              "value": "cluster-ip-nlp-dialog-engine.dialog.svc.cluster.local:6002"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_NORMAL_FAQ_ENGINE_ROOT_URL",
+              "value": "10.157.112.169:7781"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_TRAIN_MODEL_ENGINE_ROOT_URL",
+              "value": "10.157.112.218:7782"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_LABEL_ENGINE_ROOT_URL",
+              "value": "10.157.112.169:7782"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_NLP_NORMAL_FAQ_TEST_ROOT_URL",
+              "value": "10.157.112.169:7783"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": "DP_DIALOG_MESSAGE_ROOT_URL",
+              "value": "cluster-ip-mt-dialog-message.dialog.svc.cluster.local:7004"
+            },
+            {
+              "__type__": "K8SDeploymentDirectEnv",
+              "name": " MT_IDENTITY_ROOT_URL",
+              "value": "cluster-ip-identity-mt.identity.svc.cluster.local:5201"
+            }
+          ],
+          "volumes": [
+            {
+              "__type__": "K8SDeploymentVolume",
+              "name": "data",
+              "claimName": "data",
+              "mountPath": "/usr/src/data"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "__type__": "K8SVolume",
+            "name": "data",
+            "capacityStorage": 200,
+            "hostPath": "trainModel/data"
+          }
+        ]
+      }
+    }
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "db-bot-management-initializer",
+      "imageCategory": "dialog",
+      "srcImage": "dialog/db_bot_management:pwc_1.0.0",
+      "envs": [
+        "PG_BOT_MANAGEMENT_HOST=10.157.112.168",
+        "PG_BOT_MANAGEMENT_PORT=30500",
+        "PG_BOT_MANAGEMENT_DATABASE=bot-management",
+        "PG_BOT_MANAGEMENT_USERNAME=postgres",
+        "PG_BOT_MANAGEMENT_PASSWORD=aa8zSPStp2bsc0o5HHm_4",
+        "DB_EXECUTION_CONTEXT=default"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/",
+    "targetRegistryBase": "10.157.112.168:5001/",
+    "targetRegistryUser": "testuser",
+    "targetRegistryPassword": "minerva"
+  },
+  "k8sContext": {
+    "__type__": "K8SContext",
+    "namespaces": [
+      "dialog-test"
+    ],
+    "yamlOutputRootDir": "../project-dialog/k8s-yaml-config",
+    "imagePullSecrets": "meinenghua"
+  },
+  "nginxContext": {
+    "__type__": "NginxContext",
+    "certDir": "/data1/project-dialog/nginx-cert",
+    "targetNginxDir": "/data1/project-dialog/nginx",
+    "containerName": "nginx",
+    "imageCategory": "thirdparty",
+    "srcImage": "nginx:1.17.6",
+    "servers": []
+  },
+  "dbBackupAndRestoreContext": {
+    "__type__": "DBBackupAndRestoreContext",
+    "imageCategory": "thirdparty",
+    "srcImage": "postgres:11.5-alpine",
+    "databases": [
+      {
+        "__type__": "DatabaseInfo",
+        "name": "bot-management",
+        "server": "10.157.112.168",
+        "port": "30500",
+        "user": "postgres",
+        "password": "aa8zSPStp2bsc0o5HHm_4",
+        "diskDir": "/dbbackup/dialog",
+        "useHostNetwork": false
+      }
+    ]
+  }
+}

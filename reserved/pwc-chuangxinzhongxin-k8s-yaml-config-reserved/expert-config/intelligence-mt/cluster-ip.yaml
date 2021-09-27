@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-ip-intelligence-mt
+  namespace: expert
+spec:
+  selector:
+    app: deployment-intelligence-mt
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+  

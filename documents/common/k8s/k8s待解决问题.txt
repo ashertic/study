@@ -1,0 +1,19 @@
+1. Pod垂直自动伸缩的使用
+2.DNS与CoreDNS的实现原理
+3.为什么 K8s 需要 Volcano
+4.jenkins  Spinnaker
+
+
+k8s常见问题
+1.k8s组件及功能
+2.kubectl apply 创建一个deployment，到pod running之间的流程
+3.Ingress和service的关系
+4.pod资源不足时，request和limit那个指标会导致pod pending
+5.pod异常和node异常处理
+6.容器监控指标
+7.告警如何恢复
+8.pv,pvc，sc的关系，什么是localpv
+9.serviceAccount和UserAccount区别             //  已解决
+10.ectd空间耗尽会出现什么问题    
+11.高可用k8s的原理
+12.网络插件有哪些，flannel有哪几种模式，简单介绍一下

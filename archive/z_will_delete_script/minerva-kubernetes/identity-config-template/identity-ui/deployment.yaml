@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-ui
+  namespace: identity
+spec:
+  selector:
+    matchLabels:
+      app: deployment-identity-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-identity-ui
+    spec:
+      containers:
+      - name: identity-ui
+        image: IMAGE_BASEURL_PLACEHOLDER/identity/identity_ui:IMAGE_VERSION_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: VUE_APP_COOKIE_DOMAIN_NAME
+          value: "APP_COOKIE_DOMAIN_NAME_PLACEHOLDER"
+        - name: VUE_APP_HOMEPAGE_ROOT_URL
+          value: HOMEPAGE_UI_URL_PLACEHOLDER
+        - name: VUE_APP_IDENTITY_HOST
+          value: IDENTITY_API_URL_PLACEHOLDER/v1
+        - name: VUE_APP_FOOTER_TEXT
+          value: "VUE_APP_FOOTER_TEXT_PLACEHOLDER"
+        - name: VUE_APP_TENANT
+          value: "VUE_APP_TENANT_PLACEHOLDER"
+        - name: VUE_APP_PRIMARY_COLOR
+          value: "VUE_APP_PRIMARY_COLOR_PLACEHOLDER"
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: IDENTITY_NODE_SELECTOR_PLACEHOLDER

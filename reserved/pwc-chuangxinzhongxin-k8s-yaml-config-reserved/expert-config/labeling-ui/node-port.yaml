@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-port-labeling-ui
+  namespace: expert
+spec:
+  selector:
+    app: deployment-labeling-ui
+  ports:
+    - protocol: TCP
+      nodePort: 32305
+      port: 8082
+      targetPort: 8082
+  type: NodePort
+  

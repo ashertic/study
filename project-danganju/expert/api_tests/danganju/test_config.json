@@ -1,0 +1,34 @@
+{
+  "endpoint": "172.16.2.135:7001",
+  "expert_apis": [
+    {
+      "workspace_name": "tenant5通用文档识别",
+      "test_folder": "通用文档识别",
+      "workspace_id": "a0703ba8-e2fb-4d4f-9a42-76fd76a2f94a",
+      "app_key": "14cb2720-b2f2-11eb-8864-0f22d89f5acf",
+      "app_secret": "14cb2721-b2f2-11eb-8864-0f22d89f5acf"
+    },
+    {
+      "workspace_name": "tenant5表格读取模型",
+      "test_folder": "表格读取模型",
+      "workspace_id": "08b54af1-9dc4-4059-a2ac-81e69f469856",
+      "app_key": "14cb2720-b2f2-11eb-8864-0f22d89f5acf",
+      "app_secret": "14cb2721-b2f2-11eb-8864-0f22d89f5acf"
+    },
+    {
+      "workspace_name": "tenant1通用文档识别",
+      "test_folder": "通用文档识别",
+      "workspace_id": "6eaa4553-f240-4fec-acdc-459499929558",
+      "app_key": "9cec1410-b2ee-11eb-9e79-fd04b9623a19",
+      "app_secret": "9cec1411-b2ee-11eb-9e79-fd04b9623a19"
+    },
+    {
+      "workspace_name": "tenant1表格读取模型",
+      "test_folder": "表格读取模型",
+      "workspace_id": "ae871c35-b9d7-4387-a731-19d75806cc0b",
+      "app_key": "9cec1410-b2ee-11eb-9e79-fd04b9623a19",
+      "app_secret": "9cec1411-b2ee-11eb-9e79-fd04b9623a19"
+    }
+  ]
+}
+

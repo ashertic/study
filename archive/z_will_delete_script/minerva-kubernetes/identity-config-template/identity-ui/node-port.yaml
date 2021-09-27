@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-port-identity-ui
+  namespace: identity
+spec:
+  selector:
+    app: deployment-identity-ui
+  ports:
+    - protocol: TCP
+      nodePort: 31002
+      port: 8082
+      targetPort: 8082
+  type: NodePort
+  

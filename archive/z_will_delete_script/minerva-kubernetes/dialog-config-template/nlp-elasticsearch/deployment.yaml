@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlp-elasticsearch
+  namespace: dialog
+spec:
+  selector:
+    matchLabels:
+      app: deployment-nlp-elasticsearch
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-nlp-elasticsearch
+    spec:
+      containers:
+      - name: nlp-elasticsearch
+        image: IMAGE_BASEURL_PLACEHOLDER/elasticsearch:7.5.0
+        imagePullPolicy: Always
+        env:
+        - name: discovery.type
+          value: single-node
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: DIALOG_NODE_SELECTOR_PLACEHOLDER

@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+data:
+  POSTGRES: postgres:w2cSXxHjlcbwYv6zLeyh@cluster-ip-postgres.identity.svc.cluster.local:5432
+  SERVICE_SECRET: http://cluster-ip-token-mt.identity.svc.cluster.local:5100/secret
+kind: ConfigMap
+metadata:
+  name: variables
+  namespace: identity
+---
+apiVersion: v1
+data:
+  # use this command to get base64 string: echo -n 'w2cSXxHjlcbwYv6zLeyh' | base64
+  postgres-password: "dzJjU1h4SGpsY2J3WXY2ekxleWg="
+kind: Secret
+metadata:
+  name: credential
+  namespace: identity
+type: Opaque

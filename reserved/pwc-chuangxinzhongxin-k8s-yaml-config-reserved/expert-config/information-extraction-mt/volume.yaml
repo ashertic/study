@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: information-extraction-workspace
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 500Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: /data1/information-extraction/workspace
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: information-extraction-workspace
+  namespace: expert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: information-extraction-workspace
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: information-extraction-session
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 500Gi
+  hostPath:
+    type: DirectoryOrCreate
+    path: /data1/information-extraction/session
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: information-extraction-session
+  namespace: expert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: information-extraction-session

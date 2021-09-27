@@ -1,0 +1,358 @@
+"6.1.14 Audit SGID executables" : [WARNING]
+The owner of a file can set the file's permissions to run with the owner's or group's permissions, 
+even if the user running the program is not the owner or a member of the group. 
+The most common reason for a SGID program is to enable users to perform functions (such as changing their password) that require root privileges.
+
+Rationale:
+
+There are valid reasons for SGID programs, but it is important to identify and review such 
+programs to ensure they are legitimate. Review the files returned by the action in the audit 
+section and check to see if system binaries have a different md5 checksum than what from the package. 
+This is an indication that the binary may have been replaced.
+NOTE: Any files noted by this check should be manually reviewed to determine if SGID is appropriate for your environment.
+
+The following 110 files are SUID or SGID:
+
+  /usr/bin/wall
+     owner: root, group: tty, permissions: 2555
+
+  /usr/bin/fusermount
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/chage
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/gpasswd
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/newgrp
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/su
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/chfn
+     owner: root, group: root, permissions: 4711
+
+  /usr/bin/passwd
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/at
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/chsh
+     owner: root, group: root, permissions: 4711
+
+  /usr/bin/mount
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/umount
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/write
+     owner: root, group: tty, permissions: 2755
+
+  /usr/bin/pkexec
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/crontab
+     owner: root, group: root, permissions: 4755
+
+  /usr/bin/sudo
+     owner: root, group: root, permissions: 4111
+
+  /usr/bin/ssh-agent
+     owner: root, group: nobody, permissions: 2111
+
+  /usr/sbin/pam_timestamp_check
+     owner: root, group: root, permissions: 4755
+
+  /usr/sbin/unix_chkpwd
+     owner: root, group: root, permissions: 4755
+
+  /usr/sbin/netreport
+     owner: root, group: root, permissions: 2755
+
+  /usr/sbin/usernetctl
+     owner: root, group: root, permissions: 4755
+
+  /usr/sbin/postdrop
+     owner: root, group: postdrop, permissions: 2755
+
+  /usr/sbin/postqueue
+     owner: root, group: postdrop, permissions: 2755
+
+  /usr/sbin/userhelper
+     owner: root, group: root, permissions: 4711
+
+  /usr/sbin/mount.nfs
+     owner: root, group: root, permissions: 4755
+
+  /usr/lib/polkit-1/polkit-agent-helper-1
+     owner: root, group: root, permissions: 4755
+
+  /usr/libexec/utempter/utempter
+     owner: root, group: utmp, permissions: 2711
+
+  /usr/libexec/dbus-1/dbus-daemon-launch-helper
+     owner: root, group: dbus, permissions: 4750
+
+  /usr/libexec/openssh/ssh-keysign
+     owner: root, group: ssh_keys, permissions: 2111
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/bin/mount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/bin/su
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/bin/umount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/chfn
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/chsh
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/gpasswd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/newgrp
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/passwd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/64b9ca6b9dd198693176b738bce4ff468a4cf8bb5f1253dc9349cbb15475334b/diff/usr/bin/wall
+     owner: root, group: tty, permissions: 2755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/bin/ping
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/bin/su
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/chfn
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/chsh
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/gpasswd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/newgrp
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/271f0e6da3522858563e104e8ad5a8cfa6424b0c971a3607fefe5a5eb5c82434/diff/usr/bin/passwd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/bin/mount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/bin/su
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/bin/umount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/chfn
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/chsh
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/gpasswd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/newgrp
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/passwd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/d3d4807357d5863ad0636b4975ad23b02174251d2233a837769830300e8bd37e/diff/usr/bin/wall
+     owner: root, group: tty, permissions: 2755
+
+  /var/lib/docker/overlay2/5ea3627325ed80eae69fe9f6055f58a89c57cc7efff2b3484215b04f2461aab8/diff/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+     owner: root, group: 101, permissions: 4754
+
+  /var/lib/docker/overlay2/309e70b6974c72a062a2f537eee4041bb203f9a8cba42674e5ceed5b54446f5e/diff/usr/bin/ssh-agent
+     owner: root, group: 102, permissions: 2755
+
+  /var/lib/docker/overlay2/309e70b6974c72a062a2f537eee4041bb203f9a8cba42674e5ceed5b54446f5e/diff/usr/lib/openssh/ssh-keysign
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/bin/mount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/bin/su
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/bin/umount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/sbin/pam_extrausers_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/chfn
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/chsh
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/gpasswd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/newgrp
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/passwd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/42156bc2c3416907d06f8460525b41935d8109f3e37d642e7f9b44bb296be74b/diff/usr/bin/wall
+     owner: root, group: tty, permissions: 2755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/bin/mount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/bin/su
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/bin/umount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/sbin/pam_extrausers_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/usr/bin/chfn
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/usr/bin/chsh
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/usr/bin/gpasswd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/usr/bin/newgrp
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/usr/bin/passwd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/620dc85bcde12dbecd9745ba3f8c886a9d7d20be68c48b9e0d43b09bfb5d89aa/diff/usr/bin/wall
+     owner: root, group: tty, permissions: 2755
+
+  /var/lib/docker/overlay2/39016e6f27dc8584806863e5437ce3714025f60bb06b0899323d16884583c6ca/diff/bin/ping
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/39016e6f27dc8584806863e5437ce3714025f60bb06b0899323d16884583c6ca/diff/usr/bin/crontab
+     owner: root, group: 101, permissions: 2755
+
+  /var/lib/docker/overlay2/39016e6f27dc8584806863e5437ce3714025f60bb06b0899323d16884583c6ca/diff/usr/bin/ssh-agent
+     owner: root, group: 103, permissions: 2755
+
+  /var/lib/docker/overlay2/39016e6f27dc8584806863e5437ce3714025f60bb06b0899323d16884583c6ca/diff/usr/bin/sudo
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/39016e6f27dc8584806863e5437ce3714025f60bb06b0899323d16884583c6ca/diff/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+     owner: root, group: 102, permissions: 4754
+
+  /var/lib/docker/overlay2/39016e6f27dc8584806863e5437ce3714025f60bb06b0899323d16884583c6ca/diff/usr/lib/openssh/ssh-keysign
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/bin/mount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/bin/su
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/bin/umount
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/sbin/unix_chkpwd
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/usr/bin/chage
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/usr/bin/chfn
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/usr/bin/chsh
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/usr/bin/expiry
+     owner: root, group: 42, permissions: 2755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/usr/bin/gpasswd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/usr/bin/newgrp
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/usr/bin/passwd
+     owner: root, group: root, permissions: 4755
+
+  /var/lib/docker/overlay2/11b96e2c70dfd9b2496f916d6f4d987d79d6a5ba92a11e1c0f808ec3bb58a1ef/diff/usr/bin/wall
+     owner: root, group: tty, permissions: 2755
+
+
+
+Solution : 
+
+Ensure that no rogue SGID programs have been introduced into the system. Review the files returned by the action in the Audit section and confirm the integrity of these binaries.
+
+See Also : 
+
+https://workbench.cisecurity.org/files/1858
+
+Reference(s) : 
+
+800-53|AC-6,CSF|PR.AC-4,CCE|CCE-80132-4,LEVEL|1NS,PCI-DSS|10.4

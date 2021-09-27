@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-ui
+  namespace: identity
+spec:
+  selector:
+    matchLabels:
+      app: deployment-identity-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-identity-ui
+    spec:
+      containers:
+      - name: identity-ui
+        image: 10.157.112.207:5001/identity/identity_ui:latest
+        imagePullPolicy: Always
+        env:
+        - name: VUE_APP_COOKIE_DOMAIN_NAME
+          value: "smartdocumentanalyser.asia.pwcinternal.com"
+        - name: VUE_APP_HOMEPAGE_ROOT_URL
+          value: https://smartdocumentanalyser.asia.pwcinternal.com:50000
+        - name: VUE_APP_IDENTITY_HOST
+          value: https://smartdocumentanalyser.asia.pwcinternal.com:60000/v1
+        - name: VUE_APP_FOOTER_TEXT
+          value: ""
+        - name: VUE_APP_TENANT
+          value: "pwc"
+        - name: VUE_APP_PRIMARY_COLOR
+          value: "#D04902"
+        resources: {}
+      imagePullSecrets:
+      - name: meinenghua
+      nodeSelector: 
+        node-tag: gpu-001
