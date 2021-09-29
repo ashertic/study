@@ -1,0 +1,212 @@
+{
+  "__type__": "Config",
+  "context": {
+    "__type__": "Context",
+    "customer": "XY",
+    "project": "project",
+    "env": "prod",
+    "description": "xingyuan",
+    "mode": "docker",
+    "os": "centos",
+    "osVersion": "7.7",
+    "dataPathRoot": "../project-xingyuan/data_root",
+    "imageOutputRootDir": "../project-xingyuan/images"
+  },
+  "services": [
+    {
+      "__type__": "Service",
+      "name": "postgres",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "postgres:11.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "expert_pg",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "56000:5432"
+        ],
+        "envs": [
+          "POSTGRES_PASSWORD=\"Ku5C43CHb9\""
+        ],
+        "volumes": [
+          "/postgres:/var/lib/postgresql/data"
+        ],
+        "command": "-c shared_buffers=256MB -c max_connections=800"
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "redis",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "redis:5.0.5-alpine",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "ultra_redis",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "6381:6379"
+        ],
+        "envs": [
+          "REDIS_PASSWORD=\"bz1XLAb3GKb7\""
+        ],
+        "volumes": [],
+        "command": "redis-server --requirepass \"bz1XLAb3GKb7\" --appendonly \"yes\""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_admin_ui",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "expert/metis_admin_ui:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_admin_ui",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "8077:8000"
+        ],
+        "envs": [
+          "VUE_APP_ADMIN_HOST=\"http://112.80.39.187:8027/v1\"",
+          "VUE_APP_KEY=\"1153771b19800a0e0b9f22f6458fdbb7\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_admin_api",
+      "namespace": "expert",
+      "imageCategory": "thirdparty",
+      "srcImage": "expert/metis_admin_api:latest",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_admin_api",
+        "restart": "always",
+        "useHostNetwork": false,
+        "ports": [
+          "8027:7101"
+        ],
+        "envs": [
+          "POSTGRES=\"postgres:Ku5C43CHb9@10.0.1.101:56000\"",
+          "POSTGRES_ADMIN=\"metis-admin\"",
+          "SERVICE_METIS=\"http://10.0.1.101:8000\"",
+          "SCEDULE_TYPE=\"day\"",
+          "MANAGE_AUTH_KEY=\"f79732d583a191b235354c2ed6e4fc17\""
+        ],
+        "volumes": [],
+        "command": ""
+      }
+    },
+    {
+      "__type__": "Service",
+      "name": "metis_ray_head",
+      "namespace": "expert",
+      "imageCategory": "metis_ultra",
+      "srcImage": "metis_ultra/metis_runtime:beta",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_ray_head",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "dockerRunOptions": [
+          "--shm-size 16G",
+          "--ulimit core=100"
+        ],
+        "ports": [
+	  "6379:6379"
+        ],
+        "envs": [
+                "WHEEL_DIR=\"/ultra/wheels\""
+                  ],
+        "volumes": [
+         "/metis_runtime/dependencies/wheels:/ultra/wheels",         
+         "/metis_runtime/dependencies/requirements.txt:/ultra/requirements.txt"
+        ],
+        "command": "bash -c \"./api_metis/script/start_ray_head.sh && sleep infinity\""
+      }
+    },
+     {
+      "__type__": "Service",
+      "name": "metis_runtime",
+      "namespace": "expert",
+      "imageCategory": "metis_ultra",
+      "srcImage": "metis_ultra/metis_runtime:beta",
+      "docker": {
+        "__type__": "ServiceDockerConfig",
+        "containerName": "metis_runtime",
+        "restart": "always",
+        "useHostNetwork": false,
+        "privileged": true,
+        "dockerRunOptions": [
+          "--ulimit core=100"
+        ],
+        "ports": [
+          "8000:8000",
+          "8265:8265"
+        ],
+        "envs": [
+          "RAY_HEAD=\"auto\"",
+          "RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE=1",
+          "DATA_DIR=\"/ultra/data\"",
+          "MODULE_DIR=\"/ultra/modules\"",
+          "WHEEL_DIR=\"/ultra/wheels\"",
+          "RESOURCE_ROOT=\"/ultra/resource\"",
+          "MT_GPU=\"0\"",
+          "PYTHONPATH=\"/ultra\"",
+          "POSTGRES=\"postgres://postgres:Ku5C43CHb9@10.0.1.101:56000/metis_ultra\"",
+          "REDIS=\"redis://user:bz1XLAb3GKb7@10.0.1.101:6381\"",
+          "CPU_EXECUTOR_NUMBER=2",
+          "GPU_EXECUTOR_NUMBER=2",
+          "QUEUE_CAPACITY=20",
+          "ENABLE_PERMISSION=true",
+          "EXECUTOR_GPU_NUM=1",
+          "DEFAULT_EXECUTE_MODE=serial",
+          "WORKER_NUMBER=2"
+        ],
+        "volumes": [
+          "/metis_runtime/data:/ultra/data",
+          "/metis_runtime/dependencies/resource:/ultra/resource",
+          "/metis_runtime/dependencies/requirements.txt:/ultra/requirements.txt",
+          "/metis_runtime/dependencies/wheels:/ultra/wheels",
+          "/metis_runtime/module_library:/ultra/modules"
+        ],
+        "command": "bash -c \"./api_metis/script/start_runtime.sh\""
+      }
+    }
+    
+  ],
+  "dbInitializers": [
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "metis-ultra-db-initalizer",
+      "imageCategory": "metis_ultra",
+      "srcImage": "metis_ultra/metis_db_migration:latest",
+      "useHostNetwork": false,
+      "envs": [
+        "POSTGRES=\"postgres:Ku5C43CHb9@10.0.1.101:56000\""
+      ]
+    },
+    {
+      "__type__": "DatabaseInitializer",
+      "name": "expert-db-initalizer",
+      "imageCategory": "expert",
+      "srcImage": "expert/metis_admin_db:latest",
+      "useHostNetwork": false,
+      "envs": [
+        "POSTGRES=postgres:Ku5C43CHb9@10.0.1.101:56000"
+      ]
+    }
+  ],
+  "dockerContext": {
+    "__type__": "DockerContext",
+    "srcRegistryBase": "swr.cn-north-4.myhuaweicloud.com/meinenghua/"
+  }
+}
